@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Azure.Storage;
 using Azure.Storage.Blobs;
+using Microsoft.OpenApi.Models;
 using System;
 using Microsoft.Data.SqlClient;
 
@@ -15,17 +15,24 @@ var connectionString = builder.Configuration.GetConnectionString("DatabaseConnec
 builder.Services.AddSingleton<SqlConnection>(_ => new SqlConnection(connectionString));
 
 // Configure Azure Blob Storage
-builder.Services.AddSingleton(provider =>
+builder.Services.AddScoped(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
-    var storageconnectionString = configuration.GetConnectionString("AzureStorageConnectionString");
-    var blobServiceClient = new BlobServiceClient(storageconnectionString);
-    var blobContainerName = "bursarymanagementstorage";
-    var blobContainerClient = blobServiceClient.GetBlobContainerClient(blobContainerName);
+    var storageConnectionString = configuration.GetConnectionString("AzureStorageConnectionString");
+    var blobServiceClient = new BlobServiceClient(storageConnectionString);
+    /* var blobContainerName = "bursarymanagementcontainer";
+     var blobContainerClient = blobServiceClient.GetBlobContainerClient(blobContainerName);*/
+    var blobContainerClient = blobServiceClient;
     return blobContainerClient;
 });
 
+
 builder.Services.AddControllers();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "BursaryManagementAPI", Version = "v1" });
+});
 
 var app = builder.Build();
 
@@ -34,7 +41,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "BursaryManagementAPI v1");
+    });
 }
 
 app.UseHttpsRedirection();

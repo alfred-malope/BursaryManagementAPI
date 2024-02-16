@@ -1,6 +1,12 @@
-﻿namespace BursaryManagementAPI.Models
+﻿using Microsoft.AspNetCore.Http;
+
+namespace BursaryManagementAPI.Models
 {
-    internal class UploadDocument
+    public class UploadDocument
     {
+        
+        public required IFormFile File { get; set; }
+        public int DocumentType { get; set; }
+
     }
 }
