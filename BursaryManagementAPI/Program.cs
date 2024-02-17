@@ -7,8 +7,14 @@ using Azure.Storage.Blobs;
 using Microsoft.OpenApi.Models;
 using System;
 using Microsoft.Data.SqlClient;
+using BusinessLogic;
+// Startup.cs
+
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<StudentFundRequestBLL>();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection");
