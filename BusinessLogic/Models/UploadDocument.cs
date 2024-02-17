@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace BursaryManagementAPI.Models
+namespace BusinessLogic.Models
 {
     public class UploadDocument
     {

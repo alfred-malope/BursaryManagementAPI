@@ -1,4 +1,4 @@
-﻿using BursaryManagementAPI.Models;
+﻿using BusinessLogic.Models;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -33,24 +33,26 @@ namespace BursaryManagementAPI.Controllers
             }
         }
 
-        //[HttpPost]
-        //public ActionResult Create([FromBody] StudentFundRequest newRequest)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
+        [HttpPost]
+        public ActionResult Create([FromBody] CreateStudentFundRequestForNewStudent newRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //    try
-        //    {
-        //        _StudentFundRequestBLL.Create(newRequest);
-        //        return Ok("Student fund request created successfully!");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(StatusCodes.Status500InternalServerError, $"Error creating student fund request: {ex.Message}");
-        //    }
-        //}
+            try
+            {
+                _StudentFundRequestBLL.Create(newRequest);
+                return Ok("Student fund request created successfully!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error creating student fund request: {ex.Message}");
+            }
+        }
+
+
 
         //[HttpPut("{id}")]
         //public ActionResult UpdateRequest(int id, [FromBody] StudentFundRequest updatedRequest)

@@ -2,7 +2,6 @@
 using DataAccess;
 using System;
 using System.Collections.Generic;
-using BursaryManagementAPI;
 
 namespace BusinessLogic
 {
@@ -27,35 +26,51 @@ namespace BusinessLogic
             }
         }
 
-        public void Create(StudentFundRequest newRequest)
+        public void Create(Models.CreateStudentFundRequestForNewStudent newRequest)
         {
             if (newRequest == null)
                 throw new ArgumentNullException(nameof(newRequest));
 
             try
             {
-                _repository.Create(newRequest);
+                // Convert the business logic model to the data access model
+                CreateStudentFundRequestForNewStudent dataAccessModel = new CreateStudentFundRequestForNewStudent
+                {
+                    IDNumber = newRequest.IDNumber,
+                    FirstName = newRequest.FirstName,
+                    LastName = newRequest.LastName,
+                    Email = newRequest.Email,
+                    PhoneNumber = newRequest.PhoneNumber,
+                    GenderName = newRequest.GenderName,
+                    RaceName = newRequest.RaceName,
+                    UniversityID = newRequest.UniversityID,
+                    BirthDate = newRequest.BirthDate,
+                    Grade = newRequest.Grade,
+                    Amount = newRequest.Amount
+                };
+
+                _repository.Create(dataAccessModel);
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error creating student fund request: {ex.Message}");
+                throw new Exception("Error creating student fund request", ex);
             }
         }
 
-        public void UpdateRequest(int id, StudentFundRequest updatedRequest)
-        {
-            if (updatedRequest == null)
-                throw new ArgumentNullException(nameof(updatedRequest));
+        //public void UpdateRequest(int id, StudentFundRequest updatedRequest)
+        //{
+        //    if (updatedRequest == null)
+        //        throw new ArgumentNullException(nameof(updatedRequest));
 
-            try
-            {
-                _repository.UpdateRequest(id, updatedRequest);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error updating student fund request: {ex.Message}");
-            }
-        }
+        //    try
+        //    {
+        //        _repository.UpdateRequest(id, updatedRequest);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error updating student fund request: {ex.Message}");
+        //    }
+        //}
 
         public void ApproveApplication(int applicationId)
         {
