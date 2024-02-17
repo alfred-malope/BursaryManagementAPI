@@ -29,7 +29,7 @@ namespace DataAccess
                         StudentFundRequest request = new StudentFundRequest
                         {
                             ApplicationID = reader.GetInt32(reader.GetOrdinal("ID")),
-                            //Grade = reader.GetByte(reader.GetOrdinal("Grade")), 
+                            Grade = reader.GetByte(reader.GetOrdinal("Grade")),
                             Amount = reader.GetDecimal(reader.GetOrdinal("Amount")),
                             StatusID = reader.GetInt32(reader.GetOrdinal("StatusID")),
                             Comment = reader.IsDBNull(reader.GetOrdinal("Comment")) ? "" : reader.GetString(reader.GetOrdinal("Comment"))

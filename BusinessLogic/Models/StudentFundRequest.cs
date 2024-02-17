@@ -4,7 +4,7 @@
     {
         public int ApplicationID { get; set; }
         public int StudentID { get; set; }
-        //public byte Grade { get; set; }
+        public byte Grade { get; set; }
 
         public decimal Amount { get; set; }
         public int ApplicationStatus { get; set; }
