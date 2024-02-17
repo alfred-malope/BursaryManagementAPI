@@ -1,9 +1,11 @@
-﻿using example.DataAccess.models;
+﻿using BursaryManagementAPI.Models.DataModels;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.SqlClient;
 
 
-namespace example.DataAccess
+
+namespace BursaryManagementAPI
 {
     public class DBManager
     {
@@ -11,12 +13,14 @@ namespace example.DataAccess
         public SqlConnection _connection =
             new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=BURSARYDB;Integrated Security=True;Connect Timeout=30");
 
-
         // constructor
-        public DBManager()
+        private readonly SqlConnection _connection;
+
+        public DBManager(SqlConnection connection)
         {
-            OpenConnection();
+            _connection =connection;
         }
+
 
         public void OpenConnection() => _connection.Open();
 
@@ -31,7 +35,8 @@ namespace example.DataAccess
         public SqlDataReader ExecuteReader(string query)
         {
             SqlCommand command = new SqlCommand(query, _connection);
-            return command.ExecuteReader();
+            SqlDataReader reader = command.ExecuteReader();
+            return reader;
         }
 
 
@@ -67,45 +72,45 @@ namespace example.DataAccess
             string query = "SELECT * FROM University";
             SqlDataReader reader = ExecuteReader(query);
 
-           
-                while (reader.Read())
-                {
-                    University university = new(
-                                _id: reader.GetInt32(0),
-                               _name: reader.GetString(1),
-                               _provinceID: reader.GetInt32(2)
-                               );
-                   
-                    universities.Add(university);
-                }
-            
+
+            while (reader.Read())
+            {
+                University university = new(
+                            _id: reader.GetInt32(0),
+                           _name: reader.GetString(1),
+                           _provinceID: reader.GetInt32(2)
+                           );
+
+                universities.Add(university);
+            }
+
             reader.Close();
-           
+
             return universities;
         }
 
 
         public List<BBDAllocation> BBDAllocations()
         {
-           
-            
+
+
             string query = "SELECT * FROM BBDAllocation";
             SqlDataReader reader = ExecuteReader(query);
             List<BBDAllocation> allocations = new List<BBDAllocation>();
-            
-                while (reader.Read())
-                {
-                
+
+            while (reader.Read())
+            {
+
                 BBDAllocation allocation = new(
                             _id: reader.GetInt32(0),
                             _budget: (decimal)reader.GetSqlMoney(1),
                             _dateCreated: reader.GetDateTime(2)
                             );
                 Console.WriteLine(allocation.getBudget());
-                    allocations.Add(allocation);
-                }
-            
-            return allocations;  
+                allocations.Add(allocation);
+            }
+
+            return allocations;
         }
 
         // GET BBD ALLOCATION BY YEAR
@@ -131,6 +136,7 @@ namespace example.DataAccess
 
         public void allocate()
         {
+            _connection.Open();
             // get all the universities ids only stored in a list using linq
             List<int> universityIDs = GetUniversities().Select(u => u.GetID()).ToList();
 
@@ -145,6 +151,9 @@ namespace example.DataAccess
             {
                 new UniversityFundAllocation(budget, DateTime.Now, id, allocation.getID()).save();
             });
+            _connection.Close();
+
+           
 
 
 
@@ -154,6 +163,7 @@ namespace example.DataAccess
         }
     }
 }
+
    
 
 

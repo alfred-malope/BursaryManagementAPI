@@ -6,7 +6,7 @@ name: Build and deploy ASP.Net Core app to Azure Web App - BursaryManagementAPI
 on:
   push:
     branches:
-      - alfred-version 
+      - alfred-version
   workflow_dispatch:
 
 jobs:
@@ -54,4 +54,4 @@ jobs:
           app-name: 'BursaryManagementAPI'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_EA5589E851024BCA876C22DF23C65444 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_44A2B6C9830D4F6396754CF450E85A71 }}

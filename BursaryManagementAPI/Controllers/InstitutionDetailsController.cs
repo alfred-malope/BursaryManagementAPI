@@ -1,12 +1,10 @@
-﻿using example.ApplicationModels;
-using example.DataAccess;
-using example.DataAccess.models;
+﻿using BursaryManagementAPI.Models.DataModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-
+using BursaryManagementAPI.Models.DTO;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace example.Controllers
+namespace BursaryManagementAPI.Controllers
 
 
 {
@@ -15,9 +13,15 @@ namespace example.Controllers
     public class InstitutionDetailsController : ControllerBase
             {
          private readonly ILogger<InstitutionDetailsController> _logger;
+         private readonly UniversityDAO _universityDAO;
+        private readonly DBManager _dbManager;
 
-        public InstitutionDetailsController(ILogger<InstitutionDetailsController> logger)
+
+        //using dependency injects to get required ocjects
+        public InstitutionDetailsController(ILogger<InstitutionDetailsController> logger, UniversityDAO universityDAO, DBManager dBManager)
         {
+            _dbManager = dBManager;
+            _universityDAO = universityDAO;
             _logger = logger;
         }
         // GET: api/<InstitutionDetailsController>
@@ -26,7 +30,7 @@ namespace example.Controllers
         public List<University> Get()
         {
             
-            return UniversityADO.getUniversities();
+            return _universityDAO.GetUniversities();
         }
 
         // GET api/<InstitutionDetailsController>/5
@@ -41,7 +45,7 @@ namespace example.Controllers
         public void Post([FromBody] string value)
         {
            
-               new DBManager().allocate();
+               _dbManager.allocate();
             
             
             
