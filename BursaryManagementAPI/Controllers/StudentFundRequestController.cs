@@ -1,4 +1,5 @@
-﻿using BursaryManagementAPI.Models;
+﻿using BursaryManagementAPI.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -35,9 +36,9 @@ namespace BursaryManagementAPI.Controllers
                         {
                             StudentFundRequest request = new StudentFundRequest
                             {
-                                ApplicationID = reader.GetInt32(reader.GetOrdinal("ApplicationID")),
+                                ID = reader.GetInt32(reader.GetOrdinal("ApplicationID")),
                                 StudentID = reader.GetInt32(reader.GetOrdinal("StudentID")),
-                                UniversityID = reader.GetInt32(reader.GetOrdinal("UniversityID")),
+                                //UniversityID = reader.GetInt32(reader.GetOrdinal("UniversityID")),
                                 Grade = reader.GetInt32(reader.GetOrdinal("Grade")),
                                 Amount = reader.GetDecimal(reader.GetOrdinal("Amount")),
                                 ApplicationStatus = reader.GetInt32(reader.GetOrdinal("ApplicationStatus")),
@@ -61,6 +62,7 @@ namespace BursaryManagementAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles ="Admin")]
         public ActionResult Create([FromBody] StudentFundRequest newRequest)
         {
             if (!ModelState.IsValid)
@@ -77,7 +79,7 @@ namespace BursaryManagementAPI.Controllers
                 {
                     // Add parameters to the command
                     command.Parameters.AddWithValue("@StudentID", newRequest.StudentID);
-                    command.Parameters.AddWithValue("@UniversityID", newRequest.UniversityID);
+                    //command.Parameters.AddWithValue("@UniversityID", newRequest.UniversityID);
                     command.Parameters.AddWithValue("@Grade", newRequest.Grade);
                     command.Parameters.AddWithValue("@Amount", newRequest.Amount);
 
@@ -112,7 +114,7 @@ namespace BursaryManagementAPI.Controllers
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
                     command.Parameters.AddWithValue("@StudentID", updatedRequest.StudentID);
-                    command.Parameters.AddWithValue("@UniversityID", updatedRequest.UniversityID);
+                    //command.Parameters.AddWithValue("@UniversityID", updatedRequest.UniversityID);
                     command.Parameters.AddWithValue("@Grade", updatedRequest.Grade);
                     command.Parameters.AddWithValue("@Amount", updatedRequest.Amount);
                     command.Parameters.AddWithValue("@ApplicationStatus", updatedRequest.ApplicationStatus);

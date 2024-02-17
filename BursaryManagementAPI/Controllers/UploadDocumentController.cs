@@ -1,10 +1,10 @@
-﻿using BursaryManagementAPI.Models;
-using Azure.Storage.Blobs;
+﻿using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Threading.Tasks;
+using BursaryManagementAPI.Models.DTO;
 
 namespace BursaryManagementAPI.Controllers
 {
