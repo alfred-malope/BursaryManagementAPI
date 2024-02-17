@@ -8,17 +8,19 @@ using Microsoft.OpenApi.Models;
 using System;
 using Microsoft.Data.SqlClient;
 using BusinessLogic;
+using DataAccess;
 // Startup.cs
 
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<StudentFundRequestBLL>();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DatabaseConnection");
 builder.Services.AddSingleton<SqlConnection>(_ => new SqlConnection(connectionString));
+builder.Services.AddScoped<StudentFundRequestDAL>();
+builder.Services.AddScoped<StudentFundRequestBLL>();
 
 // Configure Azure Blob Storage
 builder.Services.AddScoped(provider =>
@@ -26,8 +28,6 @@ builder.Services.AddScoped(provider =>
     var configuration = provider.GetRequiredService<IConfiguration>();
     var storageConnectionString = configuration.GetConnectionString("AzureStorageConnectionString");
     var blobServiceClient = new BlobServiceClient(storageConnectionString);
-    /* var blobContainerName = "bursarymanagementcontainer";
-     var blobContainerClient = blobServiceClient.GetBlobContainerClient(blobContainerName);*/
     var blobContainerClient = blobServiceClient;
     return blobContainerClient;
 });

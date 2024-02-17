@@ -28,12 +28,10 @@ namespace DataAccess
                     {
                         StudentFundRequest request = new StudentFundRequest
                         {
-                            ApplicationID = reader.GetInt32(reader.GetOrdinal("ApplicationID")),
-                            StudentID = reader.GetInt32(reader.GetOrdinal("StudentID")),
-                            UniversityID = reader.GetInt32(reader.GetOrdinal("UniversityID")),
-                            Grade = reader.GetInt32(reader.GetOrdinal("Grade")),
+                            ApplicationID = reader.GetInt32(reader.GetOrdinal("ID")),
+                            //Grade = reader.GetByte(reader.GetOrdinal("Grade")), 
                             Amount = reader.GetDecimal(reader.GetOrdinal("Amount")),
-                            ApplicationStatus = reader.GetInt32(reader.GetOrdinal("ApplicationStatus")),
+                            StatusID = reader.GetInt32(reader.GetOrdinal("StatusID")),
                             Comment = reader.IsDBNull(reader.GetOrdinal("Comment")) ? "" : reader.GetString(reader.GetOrdinal("Comment"))
                         };
                         requests.Add(request);
@@ -56,8 +54,7 @@ namespace DataAccess
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
                     command.Parameters.AddWithValue("@StudentID", newRequest.StudentID);
-                    command.Parameters.AddWithValue("@UniversityID", newRequest.UniversityID);
-                    command.Parameters.AddWithValue("@Grade", newRequest.Grade);
+                    //command.Parameters.AddWithValue("@Grade", newRequest.Grade);
                     command.Parameters.AddWithValue("@Amount", newRequest.Amount);
 
                     command.ExecuteNonQuery();
@@ -78,10 +75,9 @@ namespace DataAccess
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
                     command.Parameters.AddWithValue("@StudentID", updatedRequest.StudentID);
-                    command.Parameters.AddWithValue("@UniversityID", updatedRequest.UniversityID);
-                    command.Parameters.AddWithValue("@Grade", updatedRequest.Grade);
+                    //command.Parameters.AddWithValue("@Grade", updatedRequest.Grade);
                     command.Parameters.AddWithValue("@Amount", updatedRequest.Amount);
-                    command.Parameters.AddWithValue("@ApplicationStatus", updatedRequest.ApplicationStatus);
+                    //command.Parameters.AddWithValue("@ApplicationStatus", updatedRequest.ApplicationStatus);
                     command.Parameters.AddWithValue("@Comment", updatedRequest.Comment);
                     command.Parameters.AddWithValue("@ApplicationID", id);
 
