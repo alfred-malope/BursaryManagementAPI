@@ -6,8 +6,6 @@
         public int RoleID { get; set; }
 
         // Navigation properties (optional)
-        public ApplicationUser User { get; set; }
-        public ApplicationRole Role { get; set; }
 
     }
 }

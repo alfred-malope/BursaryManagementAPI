@@ -10,15 +10,15 @@ namespace BursaryManagementAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InstitutionDetailsController : ControllerBase
+    public class InstitutionController : ControllerBase
             {
-         private readonly ILogger<InstitutionDetailsController> _logger;
+         private readonly ILogger<InstitutionController> _logger;
          private readonly UniversityDAO _universityDAO;
         private readonly DBManager _dbManager;
 
 
         //using dependency injects to get required ocjects
-        public InstitutionDetailsController(ILogger<InstitutionDetailsController> logger, UniversityDAO universityDAO, DBManager dBManager)
+        public InstitutionController(ILogger<InstitutionController> logger, UniversityDAO universityDAO, DBManager dBManager)
         {
             _dbManager = dBManager;
             _universityDAO = universityDAO;
@@ -42,10 +42,11 @@ namespace BursaryManagementAPI.Controllers
 
         // POST api/<InstitutionDetailsController>
         [HttpPost]
+        [Route("allocateFunds")]
         public void Post([FromBody] string value)
         {
            
-               _dbManager.allocate();
+               _universityDAO.allocate();
             
             
             

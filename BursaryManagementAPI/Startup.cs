@@ -11,6 +11,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using BursaryManagementAPI;
 using BursaryManagementAPI.Models.DataModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using BursaryManagementAPI.Authentication;
+using BursaryManagementAPI.DataAccess.DAO;
 
 public class Startup
 {
@@ -29,9 +34,11 @@ public class Startup
         //adding db connection services to the dependency injection container (Single object used in the applications lifetime)
 
         services.AddSingleton<SqlConnection>(_ => new SqlConnection(connectionString));
+        
         services.AddScoped<DBManager>();
-
         services.AddScoped<UniversityDAO>();
+        services.AddScoped<UserDAO>();
+        services.AddScoped<ContactsDAO>();
 
         //adding Azure services to the dependency injection container (scoped to instantiate a new object when requested )
         services.AddScoped(provider =>
@@ -44,7 +51,7 @@ public class Startup
 
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
-        services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+        services.AddIdentity<IdentityUser, IdentityRole>(options =>
         {
             options.Password.RequireDigit = true;
             options.Password.RequireLowercase = true;
@@ -52,6 +59,23 @@ public class Startup
             options.Password.RequiredLength = 8;
         }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
+        services.AddAuthentication(auth =>
+        {
+            auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidAudience = "http://ahmadmozaffar.net",
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("This is the key that will be used in the encription") ),
+                ValidateIssuerSigningKey = true
+            };
+        });
+
+        services.AddScoped<UserManager>();
 
         services.AddControllers();
 

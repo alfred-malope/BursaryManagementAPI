@@ -15,7 +15,8 @@ namespace BursaryManagementAPI.Models.DataModels
         [MaxLength(13)]
         public string PhoneNumber { get; set; }
 
-        // Navigation property for the User relationship
-        public ICollection<ApplicationUser> User { get; set; }
+
+
+    
     }
 }

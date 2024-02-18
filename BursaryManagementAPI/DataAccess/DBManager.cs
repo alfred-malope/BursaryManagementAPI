@@ -36,7 +36,49 @@ namespace BursaryManagementAPI
             return reader;
         }
 
+        public int InsertUserAndGetPrimaryKey(User user)
+        {
+            using (SqlCommand command = new SqlCommand { Connection = _connection })
+            {
+                command.CommandText = "INSERT INTO User (FirstName, LastName, ContactID) VALUES (@FirstName, @LastName, @ContactID)";
+                command.Parameters.AddWithValue("@FirstName", user.FirstName);
+                command.Parameters.AddWithValue("@LastName", user.LastName);
+                command.Parameters.AddWithValue("@ContactID", user.ContactID);
 
+
+                // Execute the INSERT statement
+                command.ExecuteNonQuery();
+                // Retrieve the last inserted ID using SCOPE_IDENTITY()
+                command.CommandText = "SELECT SCOPE_IDENTITY()";
+                int primaryKey = Convert.ToInt32(command.ExecuteScalar());
+                Console.WriteLine($"User ID: '{primaryKey}'");
+                return primaryKey;
+
+            }
+        }
+        public SqlConnection GetSqlConnection()
+        {
+            return _connection;
+        }
+        public int InsertContactsAndGetPrimaryKey(ContactDetails contactDetails)
+        {
+            using (SqlCommand command = new SqlCommand { Connection = _connection})
+            {
+                command.CommandText = "INSERT INTO ContactDetails (Email, PhoneNumber) VALUES (@Email, @PhoneNumber)";
+                command.Parameters.AddWithValue("@Email", contactDetails.Email);
+                command.Parameters.AddWithValue("@PhoneNumber", contactDetails.PhoneNumber);
+
+                // Execute the INSERT statement
+                command.ExecuteNonQuery();
+                // Retrieve the last inserted ID using SCOPE_IDENTITY()
+                command.CommandText = "SELECT SCOPE_IDENTITY()";
+                int primaryKey = Convert.ToInt32(command.ExecuteScalar());
+                Console.WriteLine($"Contact ID: '{primaryKey}'");
+
+                return primaryKey;
+
+            }
+        }
         // list of all the provinces
         public List<Province> GetProvinces()
         {
@@ -62,28 +104,7 @@ namespace BursaryManagementAPI
 
 
         // list of all the universities
-        public List<University> GetUniversities()
-        {
-            List<University> universities = new List<University>();
-            string query = "SELECT * FROM University";
-            SqlDataReader reader = ExecuteReader(query);
 
-
-            while (reader.Read())
-            {
-                University university = new(
-                            _id: reader.GetInt32(0),
-                           _name: reader.GetString(1),
-                           _provinceID: reader.GetInt32(2)
-                           );
-
-                universities.Add(university);
-            }
-
-            reader.Close();
-
-            return universities;
-        }
 
 
         public List<BBDAllocation> BBDAllocations()
@@ -129,34 +150,6 @@ namespace BursaryManagementAPI
             }
         }
 
-
-        public void allocate()
-        {
-            _connection.Open();
-            // get all the universities ids only stored in a list using linq
-            List<int> universityIDs = GetUniversities().Select(u => u.GetID()).ToList();
-
-            int numberOfInstitutions = universityIDs.Count();
-            BBDAllocation? allocation = GetBBDAllocationByYear(DateTime.Now.Year);
-            if (allocation == null)
-            {
-                throw new Exception("No allocation for the year");
-            }
-            decimal budget = allocation.getBudget() / numberOfInstitutions;
-            universityIDs.ForEach(id =>
-            {
-                new UniversityFundAllocation(budget, DateTime.Now, id, allocation.getID()).save();
-            });
-            _connection.Close();
-
-           
-
-
-
-
-
-
-        }
     }
 }
 
