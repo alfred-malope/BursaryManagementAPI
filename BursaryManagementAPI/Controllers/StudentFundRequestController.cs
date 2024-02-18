@@ -55,7 +55,7 @@ namespace BursaryManagementAPI.Controllers
 
 
 
-        [HttpPut("{id}")]
+        [HttpPut("updateRequest/{id}")]
         public ActionResult UpdateRequest(int id, [FromBody] UpdateStudentFundRequest updatedRequest)
         {
             if (!ModelState.IsValid)
