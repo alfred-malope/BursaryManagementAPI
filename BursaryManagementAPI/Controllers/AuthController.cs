@@ -1,6 +1,8 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Models;
+using BusinessLogic.Models.Response;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BursaryManagementAPI.Controllers
@@ -27,6 +29,23 @@ namespace BursaryManagementAPI.Controllers
                 }
                 return BadRequest(result);
             }
+            return BadRequest("Some properties are not valid");
+        }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> LoginAsync([FromBody] Login model)
+        {
+            if(ModelState.IsValid)
+            {
+                var result = await _userManager.LoginUserAsync(model);
+                if (result.isSuccess)
+                {
+                    return Ok(result);
+                }
+                return BadRequest(result);
+
+            }
+
             return BadRequest("Some properties are not valid");
         }
     }

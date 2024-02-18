@@ -40,7 +40,7 @@ namespace BusinessLogic
                 };
             }
 
-            var result = await _userManager.CheckPasswordAsync(user, model.Password);
+            bool result = await _userManager.CheckPasswordAsync(user, model.Password);
 
             if (result == false)
             {
@@ -71,7 +71,9 @@ namespace BusinessLogic
 
             return new UserManagerResponse
             {
-
+                Message = tokenString,
+                isSuccess = true,
+                ExpireDate = token.ValidTo
             };
         }
 

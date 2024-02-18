@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Net.Http.Headers;
+using BursaryManagementAPI;
 
 
 public class Startup
@@ -37,6 +39,8 @@ public class Startup
         services.AddScoped<UniversityDAL>();
         services.AddScoped<UserDAL>();
         services.AddScoped<ContactsDAL>();
+        services.AddScoped<UploadDocumentDAL>();
+
 
         //adding Azure services to the dependency injection container (scoped to instantiate a new object when requested )
         services.AddScoped(provider =>
@@ -75,12 +79,24 @@ public class Startup
         });
 
         services.AddScoped<UserBLL>();
+        services.AddScoped<UploadDocumentBLL>();
+
 
         services.AddControllers();
 
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "BursaryManagementAPI", Version = "v1" });
+            c.AddSecurityDefinition("token", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                In = ParameterLocation.Header,
+                Name = HeaderNames.Authorization,
+                Scheme = "Bearer"
+            });
+            // dont add global security requirement
+            // c.AddSecurityRequirement(/*...*/);
+            c.OperationFilter<SecureEndpointAuthRequirementFilter>();
         });
     }
 
@@ -101,7 +117,9 @@ public class Startup
 
         app.UseRouting();
 
+        app.UseAuthentication();
         app.UseAuthorization();
+        
 
         app.UseEndpoints(endpoints =>
         {
