@@ -1,5 +1,5 @@
-﻿using BursaryManagementAPI.Authentication;
-using BursaryManagementAPI.Models.DTO;
+﻿using BusinessLogic;
+using BusinessLogic.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,14 +9,14 @@ namespace BursaryManagementAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager _userManager;
-        public AuthController(UserManager userManager)
+        private readonly UserBLL _userManager;
+        public AuthController(UserBLL userManager)
         {
             this._userManager = userManager;
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync([FromBody]RegisterDTO model)
+        public async Task<IActionResult> RegisterAsync([FromBody]Register model)
         {
             if(ModelState.IsValid)
             {

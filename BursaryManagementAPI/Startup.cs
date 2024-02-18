@@ -3,19 +3,18 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using BusinessLogic;
+using DataAccess;
 using Azure.Storage.Blobs;
 using Microsoft.OpenApi.Models;
 using System;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using BursaryManagementAPI;
-using BursaryManagementAPI.Models.DataModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using BursaryManagementAPI.Authentication;
-using BursaryManagementAPI.DataAccess.DAO;
+
 
 public class Startup
 {
@@ -35,10 +34,9 @@ public class Startup
 
         services.AddSingleton<SqlConnection>(_ => new SqlConnection(connectionString));
         
-        services.AddScoped<DBManager>();
-        services.AddScoped<UniversityDAO>();
-        services.AddScoped<UserDAO>();
-        services.AddScoped<ContactsDAO>();
+        services.AddScoped<UniversityDAL>();
+        services.AddScoped<UserDAL>();
+        services.AddScoped<ContactsDAL>();
 
         //adding Azure services to the dependency injection container (scoped to instantiate a new object when requested )
         services.AddScoped(provider =>
@@ -76,7 +74,7 @@ public class Startup
             };
         });
 
-        services.AddScoped<UserManager>();
+        services.AddScoped<UserBLL>();
 
         services.AddControllers();
 
