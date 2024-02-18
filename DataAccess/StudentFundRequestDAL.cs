@@ -86,33 +86,30 @@ namespace DataAccess
             }
         }
 
-        //public void UpdateRequest(int id, StudentFundRequest updatedRequest)
-        //{
-        //    try
-        //    {
-        //        _connection.Open();
-        //        string query = "UPDATE StudentFundRequest SET StudentID = @StudentID, UniversityID = @UniversityID, Grade = @Grade, Amount = @Amount, ApplicationStatus = @ApplicationStatus, Comment = @Comment WHERE ApplicationID = @ApplicationID";
-        //        using (SqlCommand command = new SqlCommand(query, _connection))
-        //        {
-        //            command.Parameters.AddWithValue("@StudentID", updatedRequest.StudentID);
-        //            command.Parameters.AddWithValue("@Grade", updatedRequest.Grade);
-        //            command.Parameters.AddWithValue("@Amount", updatedRequest.Amount);
-        //            command.Parameters.AddWithValue("@ApplicationStatus", updatedRequest.StatusID);
-        //            command.Parameters.AddWithValue("@Comment", updatedRequest.Comment);
-        //            command.Parameters.AddWithValue("@ApplicationID", id);
+        public void UpdateRequest(int id, UpdateStudentFundRequest updatedRequest)
+        {
+            try
+            {
+                _connection.Open();
+                string query = "UPDATE StudentFundRequest SET Grade = @Grade, Amount = @Amount WHERE ID = @ID AND StatusID = 3";
+                using (SqlCommand command = new SqlCommand(query, _connection))
+                {
+                    command.Parameters.AddWithValue("@Grade", updatedRequest.Grade);
+                    command.Parameters.AddWithValue("@Amount", updatedRequest.Amount);
+                    command.Parameters.AddWithValue("@ID", id);
 
-        //            int rowsAffected = command.ExecuteNonQuery();
-        //            if (rowsAffected == 0)
-        //            {
-        //                throw new KeyNotFoundException("Student fund request not found!");
-        //            }
-        //        }
-        //    }
-        //    finally
-        //    {
-        //        _connection.Close();
-        //    }
-        //}
+                    int rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected == 0)
+                    {
+                        throw new KeyNotFoundException("Student fund request not found!");
+                    }
+                }
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
 
         public void UpdateApplicationStatus(int applicationId, int status)
         {

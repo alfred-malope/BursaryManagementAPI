@@ -1,5 +1,6 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Models;
+//using DataAccess.Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -54,28 +55,28 @@ namespace BursaryManagementAPI.Controllers
 
 
 
-        //[HttpPut("{id}")]
-        //public ActionResult UpdateRequest(int id, [FromBody] StudentFundRequest updatedRequest)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
+        [HttpPut("{id}")]
+        public ActionResult UpdateRequest(int id, [FromBody] UpdateStudentFundRequest updatedRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //    try
-        //    {
-        //        _StudentFundRequestBLL.UpdateRequest(id, updatedRequest);
-        //        return Ok("Student fund request updated successfully!");
-        //    }
-        //    catch (KeyNotFoundException)
-        //    {
-        //        return NotFound("Student fund request not found!");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(StatusCodes.Status500InternalServerError, $"Error updating student fund request: {ex.Message}");
-        //    }
-        //}
+            try
+            {
+                _StudentFundRequestBLL.UpdateRequest(id, updatedRequest);
+                return Ok("Student fund request updated successfully!");
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound("Student fund request not found!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error updating student fund request: {ex.Message}");
+            }
+        }
 
         [HttpPost("{applicationId}/approve")]
         public ActionResult ApproveApplication(int applicationId)

@@ -2,6 +2,7 @@
 using DataAccess;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace BusinessLogic
 {
@@ -57,20 +58,25 @@ namespace BusinessLogic
                 throw new ArgumentNullException(nameof(newRequest));
         }
 
-        //public void UpdateRequest(int id, StudentFundRequest updatedRequest)
-        //{
-        //    if (updatedRequest == null)
-        //        throw new ArgumentNullException(nameof(updatedRequest));
+        public void UpdateRequest(int id, Models.UpdateStudentFundRequest newRequest)
+        {
+            if (newRequest == null)
+                throw new ArgumentNullException(nameof(newRequest));
 
-        //    try
-        //    {
-        //        _repository.UpdateRequest(id, updatedRequest);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception($"Error updating student fund request: {ex.Message}");
-        //    }
-        //}
+            try
+            {
+                UpdateStudentFundRequest updatedRequest = new()
+                {
+                    Grade = newRequest.Grade,
+                    Amount = newRequest.Amount
+                };
+                _repository.UpdateRequest(id, updatedRequest);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating student fund request: {ex.Message}");
+            }
+        }
 
         public void ApproveApplication(int applicationId)
         {
