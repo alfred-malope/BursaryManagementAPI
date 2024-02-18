@@ -3,6 +3,8 @@ using BusinessLogic;
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace BursaryManagementAPI.Controllers
 {
@@ -19,7 +21,7 @@ namespace BursaryManagementAPI.Controllers
         }
 
         [HttpPost("{requestID}/upload")]
-        [Authorize]
+        [Authorize()]
         public async Task<ActionResult> UploadDocument(int requestID, [FromForm] BusinessLogic.Models.UploadDocument uploadDocument)
         {
             try

@@ -1,6 +1,7 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Models;
 using BusinessLogic.Models.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -47,6 +48,15 @@ namespace BursaryManagementAPI.Controllers
             }
 
             return BadRequest("Some properties are not valid");
+        }
+
+
+        [Authorize(Roles = Roles.BBDAdmin)]
+        [HttpGet("UserByEmail/{email}")]
+        
+        public async Task<IActionResult> getUser(string email)
+        {
+            return Ok(_userManager.getUser(email).Result);
         }
     }
 }

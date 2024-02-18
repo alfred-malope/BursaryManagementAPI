@@ -50,23 +50,30 @@ namespace BusinessLogic
                     isSuccess = false,
                 };
             }
-
+            
             Claim[] claims = new[]
             {
                 new Claim("Email", model.Email),
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                
             };
+            var roles = await _userManager.GetRolesAsync(user);
+            var claimsWithRoles = roles.Select(role => new Claim(ClaimTypes.Role, role));
+            var allClaims = claims.Concat(claimsWithRoles);
 
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]));
 
             JwtSecurityToken token = new JwtSecurityToken(
                 issuer: _configuration["AuthSettings:Issuer"],
                 audience: _configuration["AuthSettings:Audience"],
-                claims: claims,
+                claims: allClaims,
                 expires: DateTime.Now.AddDays(30),
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
 
+            var userClaims = await _userManager.GetClaimsAsync(user);
 
+            var userRoles = await _userManager.GetRolesAsync(user);
+            Console.WriteLine($"User roles: {string.Join(", ", userRoles)}");
             string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
             return new UserManagerResponse
@@ -96,10 +103,16 @@ namespace BusinessLogic
             var applicationUser = new IdentityUser
             {
                 Email = model.Email,
-                UserName = model.Email
+                UserName = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                
             };
 
+            
+
             var result = await _userManager.CreateAsync(applicationUser, model.Password);
+
+            var result2 = await _userManager.AddToRoleAsync(applicationUser, model.Role);
 
             if(result.Succeeded)
             {
@@ -118,6 +131,7 @@ namespace BusinessLogic
                 int userId = _userDAL.InsertUserAndGetPrimaryKey(user);
 
                 
+                
 
                 return new UserManagerResponse
                 {
@@ -133,6 +147,12 @@ namespace BusinessLogic
                 isSuccess = false,
                 Errors = result.Errors.Select(error => error.Description)
             };
+        }
+
+        public async Task<User> getUser(string email)
+        {
+            return _userDAL.getUserByEmail(email);
+
         }
     }
 }

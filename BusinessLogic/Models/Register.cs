@@ -19,6 +19,9 @@ namespace BusinessLogic.Models
         public string FirstName { get; set; }
         [Required]
         public string LastName { get; set; }
+        [Required]
+        [AllowedValues("Student", "BBD Admin", "University Admin")]
+        public string Role{ get; set; }
 
 
     }

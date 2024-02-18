@@ -16,6 +16,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Net.Http.Headers;
 using BursaryManagementAPI;
+using System.Security.Claims;
+using BusinessLogic.Models;
 
 
 public class Startup
@@ -26,6 +28,8 @@ public class Startup
     }
 
     public IConfiguration Configuration { get; }
+
+
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -51,7 +55,7 @@ public class Startup
         });
 
 
-        services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+        services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString, b => b.MigrationsAssembly("BursaryManagementAPI")));
 
         services.AddIdentity<IdentityUser, IdentityRole>(options =>
         {
@@ -59,6 +63,8 @@ public class Startup
             options.Password.RequireLowercase = true;
             options.Password.RequireUppercase = true;
             options.Password.RequiredLength = 8;
+            options.User.RequireUniqueEmail = true;
+            
         }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
         services.AddAuthentication(auth =>
@@ -66,22 +72,28 @@ public class Startup
             auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-            {
+        {   
+            options.TokenValidationParameters = new TokenValidationParameters
+            {   
+           
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidAudience = Configuration["AuthSettings:Audience"],
                 ValidIssuer = Configuration["AuthSettings:Issuer"],
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AuthSettings:Key"]) ),
-                ValidateIssuerSigningKey = true
+                ValidateIssuerSigningKey = true,
             };
         });
-
+        Console.WriteLine(Encoding.UTF8.GetBytes(Configuration["AuthSettings:Key"]));
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("RequireAdminRole", policy =>
+                policy.RequireRole(Roles.BBDAdmin));
+        });
         services.AddScoped<UserBLL>();
         services.AddScoped<UploadDocumentBLL>();
 
-
+        
         services.AddControllers();
 
         services.AddSwaggerGen(c =>
@@ -112,13 +124,14 @@ public class Startup
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "BursaryManagementAPI v1");
             });
         }
-
+            
+        app.UseAuthentication();
         app.UseHttpsRedirection();
 
         app.UseRouting();
-
-        app.UseAuthentication();
         app.UseAuthorization();
+        
+        
         
 
         app.UseEndpoints(endpoints =>
