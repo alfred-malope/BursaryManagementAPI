@@ -4,6 +4,10 @@ using BursaryManagementAPI.Models.DTO;
 using BursaryManagementAPI.Models.Response;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace BursaryManagementAPI.Authentication
 {
@@ -12,10 +16,61 @@ namespace BursaryManagementAPI.Authentication
         private UserManager<IdentityUser> _userManager;
         private UserDAO _userDAO;
         private ContactsDAO _contactsDAO;
-        public UserManager(UserManager<IdentityUser> userManager, UserDAO userDAO, ContactsDAO contactsDAO) {
+        private IConfiguration _configuration;
+        public UserManager(UserManager<IdentityUser> userManager, UserDAO userDAO, ContactsDAO contactsDAO, IConfiguration configuration)
+        {
+            _configuration = configuration;
             _contactsDAO = contactsDAO;
             _userManager = userManager;
             _userDAO = userDAO;
+            _configuration = configuration;
+        }
+
+        public async Task<UserManagerResponse> LoginUserAsync(LoginDTO model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return new UserManagerResponse
+                {
+                    Message = "There is no user with that Email Address",
+                    isSuccess = false,
+                };
+            }
+
+            var result = await _userManager.CheckPasswordAsync(user, model.Password);
+
+            if (result == false)
+            {
+                return new UserManagerResponse
+                {
+                    Message = "Incorrect Password",
+                    isSuccess = false,
+                };
+            }
+
+            Claim[] claims = new[]
+            {
+                new Claim("Email", model.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+            };
+
+            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["AuthSettings:Key"]));
+
+            JwtSecurityToken token = new JwtSecurityToken(
+                issuer: _configuration["AuthSettings:Issuer"],
+                audience: _configuration["AuthSettings:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddDays(30),
+                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
+
+
+            string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return new UserManagerResponse
+            {
+
+            }
         }
 
         public async Task<UserManagerResponse> RegisterUserAsync(RegisterDTO model)

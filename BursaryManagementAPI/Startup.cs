@@ -69,8 +69,9 @@ public class Startup
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidAudience = "http://ahmadmozaffar.net",
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("This is the key that will be used in the encription") ),
+                ValidAudience = Configuration["AuthSettings:Audience"],
+                ValidIssuer = Configuration["AuthSettings:Issuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AuthSettings:Key"]) ),
                 ValidateIssuerSigningKey = true
             };
         });

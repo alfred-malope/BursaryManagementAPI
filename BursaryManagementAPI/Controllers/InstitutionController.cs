@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using BursaryManagementAPI.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace BursaryManagementAPI.Controllers
@@ -27,6 +28,7 @@ namespace BursaryManagementAPI.Controllers
         // GET: api/<InstitutionDetailsController>
         [Route("api/AllUniveritydetails")]
         [HttpGet]
+        [Authorize]
         public List<University> Get()
         {
             
