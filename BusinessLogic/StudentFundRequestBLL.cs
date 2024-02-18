@@ -28,33 +28,33 @@ namespace BusinessLogic
 
         public void Create(Models.CreateStudentFundRequestForNewStudent newRequest)
         {
-            if (newRequest == null)
-                throw new ArgumentNullException(nameof(newRequest));
-
-            try
-            {
-                // Convert the business logic model to the data access model
-                CreateStudentFundRequestForNewStudent dataAccessModel = new CreateStudentFundRequestForNewStudent
+            if (newRequest != null)
+                try
                 {
-                    IDNumber = newRequest.IDNumber,
-                    FirstName = newRequest.FirstName,
-                    LastName = newRequest.LastName,
-                    Email = newRequest.Email,
-                    PhoneNumber = newRequest.PhoneNumber,
-                    GenderName = newRequest.GenderName,
-                    RaceName = newRequest.RaceName,
-                    UniversityID = newRequest.UniversityID,
-                    BirthDate = newRequest.BirthDate,
-                    Grade = newRequest.Grade,
-                    Amount = newRequest.Amount
-                };
+                    // Convert the business logic model to the data access model
+                    CreateStudentFundRequestForNewStudent dataAccessModel = new()
+                    {
+                        IDNumber = newRequest.IDNumber,
+                        FirstName = newRequest.FirstName,
+                        LastName = newRequest.LastName,
+                        Email = newRequest.Email,
+                        PhoneNumber = newRequest.PhoneNumber,
+                        GenderName = newRequest.GenderName,
+                        RaceName = newRequest.RaceName,
+                        UniversityID = newRequest.UniversityID,
+                        BirthDate = newRequest.BirthDate,
+                        Grade = newRequest.Grade,
+                        Amount = newRequest.Amount
+                    };
 
-                _repository.Create(dataAccessModel);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error creating student fund request", ex);
-            }
+                    _repository.Create(dataAccessModel);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error creating student fund request", ex);
+                }
+            else
+                throw new ArgumentNullException(nameof(newRequest));
         }
 
         //public void UpdateRequest(int id, StudentFundRequest updatedRequest)
@@ -76,7 +76,7 @@ namespace BusinessLogic
         {
             try
             {
-                _repository.UpdateApplicationStatus(applicationId, 1); // 1 indicates "Approved"
+                _repository.UpdateApplicationStatus(applicationId, 1); 
             }
             catch (Exception ex)
             {
@@ -88,7 +88,7 @@ namespace BusinessLogic
         {
             try
             {
-                _repository.UpdateApplicationStatus(applicationId, 2); // 2 indicates "Rejected"
+                _repository.UpdateApplicationStatus(applicationId, 2); 
             }
             catch (Exception ex)
             {

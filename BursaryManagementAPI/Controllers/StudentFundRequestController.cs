@@ -33,7 +33,7 @@ namespace BursaryManagementAPI.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("CreateStudentFundRequestForNewStudent")]
         public ActionResult Create([FromBody] CreateStudentFundRequestForNewStudent newRequest)
         {
             if (!ModelState.IsValid)

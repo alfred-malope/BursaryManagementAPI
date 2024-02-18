@@ -21,7 +21,7 @@ namespace BusinessLogic
         {
             try
             {
-                UploadDocument upload = new UploadDocument
+                UploadDocument upload = new()
                 {
                     File = uploadDocument.File,
                     DocumentType = uploadDocument.DocumentType
