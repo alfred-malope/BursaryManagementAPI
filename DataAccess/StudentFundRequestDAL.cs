@@ -111,16 +111,37 @@ namespace DataAccess
             }
         }
 
-        public void UpdateApplicationStatus(int applicationId, int status)
+        public void UpdateApplicationStatus(int applicationId, int status, string comment)
         {
             try
             {
                 _connection.Open();
-                string query = "UPDATE StudentFundRequest SET StatusID = @Status WHERE ID = @ID";
+
+                if (status == 2 && string.IsNullOrWhiteSpace(comment))
+                {
+                    throw new ArgumentException("A comment is required when changing the status to 2.");
+                }
+
+                string query;
+
+                if (!string.IsNullOrWhiteSpace(comment))
+                {
+                    query = "UPDATE StudentFundRequest SET StatusID = @Status, Comment = @Comment WHERE ID = @ID";
+                }
+                else
+                {
+                    query = "UPDATE StudentFundRequest SET StatusID = @Status WHERE ID = @ID";
+                }
+
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
                     command.Parameters.AddWithValue("@Status", status);
                     command.Parameters.AddWithValue("@ID", applicationId);
+
+                    if (!string.IsNullOrWhiteSpace(comment))
+                    {
+                        command.Parameters.AddWithValue("@Comment", comment);
+                    }
 
                     command.ExecuteNonQuery();
                 }

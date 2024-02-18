@@ -82,7 +82,7 @@ namespace BusinessLogic
         {
             try
             {
-                _repository.UpdateApplicationStatus(applicationId, 1); 
+                _repository.UpdateApplicationStatus(applicationId, 1, ""); 
             }
             catch (Exception ex)
             {
@@ -90,11 +90,11 @@ namespace BusinessLogic
             }
         }
 
-        public void RejectApplication(int applicationId)
+        public void RejectApplication(int applicationId,string comment)
         {
             try
             {
-                _repository.UpdateApplicationStatus(applicationId, 2); 
+                _repository.UpdateApplicationStatus(applicationId, 2, comment); 
             }
             catch (Exception ex)
             {

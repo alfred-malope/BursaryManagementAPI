@@ -93,11 +93,11 @@ namespace BursaryManagementAPI.Controllers
         }
 
         [HttpPost("{applicationId}/reject")]
-        public ActionResult RejectApplication(int applicationId)
+        public ActionResult RejectApplication(int applicationId, string comment)
         {
             try
             {
-                _StudentFundRequestBLL.RejectApplication(applicationId);
+                _StudentFundRequestBLL.RejectApplication(applicationId, comment);
                 return Ok("Application rejected successfully!");
             }
             catch (Exception ex)
