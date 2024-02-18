@@ -7,6 +7,8 @@ namespace DataAccess.Entity
     public class User 
     {
 
+        public int ID {  get; set; }
+
         [Required]
         [MaxLength(120)]
         public string FirstName { get; set; }

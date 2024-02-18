@@ -37,5 +37,42 @@ namespace DataAccess
 
             }
         }
+
+        public User getUserByEmail(string email)
+        {
+            _connection.Open();
+            User user = new User();
+
+            string query = "SELECT usr.ID, FirstName, LastName,ContactDetails.ID, PhoneNumber, Email FROM [dbo].[User] as usr INNER JOIN ContactDetails ON ContactDetails.Email=@Email AND ContactDetails.ID = usr.ContactID";
+            using(SqlCommand command = new SqlCommand(query, _connection))
+            {
+                try
+                {  command.Parameters.AddWithValue("@Email", email);
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        user = new User
+                        {
+                            ID = reader.GetInt32(0),
+                            FirstName = reader.GetString(1),
+                            LastName = reader.GetString(2),
+                            ContactID = reader.GetInt32(3),
+                        };
+                        Console.WriteLine(user.ID);
+                        Console.WriteLine(user.FirstName);
+                        Console.WriteLine(user.LastName);
+                        Console.WriteLine(user.ContactID);
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    _connection.Close();
+                    throw e;
+                }
+            }
+            _connection.Close();
+            return user;
+        }
     }
 }
