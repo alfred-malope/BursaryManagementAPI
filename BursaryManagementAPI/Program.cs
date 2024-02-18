@@ -21,6 +21,8 @@ var connectionString = builder.Configuration.GetConnectionString("DatabaseConnec
 builder.Services.AddSingleton<SqlConnection>(_ => new SqlConnection(connectionString));
 builder.Services.AddScoped<StudentFundRequestDAL>();
 builder.Services.AddScoped<StudentFundRequestBLL>();
+builder.Services.AddScoped<UploadDocumentBLL>();
+builder.Services.AddScoped<UploadDocumentDAL>();
 
 // Configure Azure Blob Storage
 builder.Services.AddScoped(provider =>
