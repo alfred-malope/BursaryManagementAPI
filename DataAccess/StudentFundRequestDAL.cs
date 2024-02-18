@@ -116,11 +116,11 @@ namespace DataAccess
             try
             {
                 _connection.Open();
-                string query = "UPDATE StudentFundRequest SET ApplicationStatus = @Status WHERE ApplicationID = @ApplicationID";
+                string query = "UPDATE StudentFundRequest SET StatusID = @Status WHERE ID = @ID";
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
                     command.Parameters.AddWithValue("@Status", status);
-                    command.Parameters.AddWithValue("@ApplicationID", applicationId);
+                    command.Parameters.AddWithValue("@ID", applicationId);
 
                     command.ExecuteNonQuery();
                 }
