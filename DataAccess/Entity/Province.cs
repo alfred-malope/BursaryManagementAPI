@@ -1,6 +1,7 @@
 ﻿using System.Xml.Linq;
 
-namespace BursaryManagementAPI.Models.DataModels
+namespace DataAccess.Entity
+
 {
     public class Province
     {

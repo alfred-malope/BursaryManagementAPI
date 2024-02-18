@@ -3,14 +3,18 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using BusinessLogic;
+using DataAccess;
 using Azure.Storage.Blobs;
 using Microsoft.OpenApi.Models;
 using System;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using BursaryManagementAPI;
-using BursaryManagementAPI.Models.DataModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 
 public class Startup
 {
@@ -29,9 +33,10 @@ public class Startup
         //adding db connection services to the dependency injection container (Single object used in the applications lifetime)
 
         services.AddSingleton<SqlConnection>(_ => new SqlConnection(connectionString));
-        services.AddScoped<DBManager>();
-
-        services.AddScoped<UniversityDAO>();
+        
+        services.AddScoped<UniversityDAL>();
+        services.AddScoped<UserDAL>();
+        services.AddScoped<ContactsDAL>();
 
         //adding Azure services to the dependency injection container (scoped to instantiate a new object when requested )
         services.AddScoped(provider =>
@@ -44,7 +49,7 @@ public class Startup
 
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
-        services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+        services.AddIdentity<IdentityUser, IdentityRole>(options =>
         {
             options.Password.RequireDigit = true;
             options.Password.RequireLowercase = true;
@@ -52,6 +57,24 @@ public class Startup
             options.Password.RequiredLength = 8;
         }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
+        services.AddAuthentication(auth =>
+        {
+            auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidAudience = Configuration["AuthSettings:Audience"],
+                ValidIssuer = Configuration["AuthSettings:Issuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["AuthSettings:Key"]) ),
+                ValidateIssuerSigningKey = true
+            };
+        });
+
+        services.AddScoped<UserBLL>();
 
         services.AddControllers();
 

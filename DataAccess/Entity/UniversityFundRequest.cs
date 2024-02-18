@@ -1,4 +1,4 @@
-﻿namespace BursaryManagementAPI.Models.DataModels
+﻿namespace DataAccess.Entity
 {
     public class UniversityFundRequest
     {
