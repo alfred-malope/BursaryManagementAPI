@@ -1,6 +1,5 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Models;
-//using DataAccess.Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;

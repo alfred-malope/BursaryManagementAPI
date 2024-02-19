@@ -25,21 +25,17 @@ namespace DataAccess
         {
             try
             {
-                // Data access logic for document upload
                 var file = uploadDocument.File;
                 if (file == null || file.Length == 0)
                     return new BadRequestObjectResult("File is empty");
 
                 await _connection.OpenAsync();
 
-                // Generate unique file name
                 var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
 
-                // Upload file to Azure Blob Storage
                 var blobClient = _blobServiceClient.GetBlobContainerClient("bursarymanagementcontainer").GetBlobClient(uniqueFileName);
                 await blobClient.UploadAsync(file.OpenReadStream());
 
-                // Save file path to the database
                 string query = "INSERT INTO Document (RequestID, TypeID, Document) VALUES (@RequestID, @DocumentType, @DocumentPath)";
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
