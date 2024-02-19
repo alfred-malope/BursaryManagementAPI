@@ -23,6 +23,10 @@ builder.Services.AddScoped<StudentFundRequestDAL>();
 builder.Services.AddScoped<StudentFundRequestBLL>();
 builder.Services.AddScoped<UploadDocumentBLL>();
 builder.Services.AddScoped<UploadDocumentDAL>();
+builder.Services.AddScoped<UniversityDAL>();
+builder.Services.AddScoped<UniversityFundRequestBLL>();
+builder.Services.AddScoped<AdminBLL>();
+builder.Services.AddScoped<AdminDAL>();
 
 // Configure Azure Blob Storage
 builder.Services.AddScoped(provider =>
