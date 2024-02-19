@@ -27,10 +27,7 @@ namespace DataAccess.Entity
 
         public DateTime getDate() => DateCreated;
 
-        void allocate()
-        {
-            //new DBManager().allocate();
-        }
+
 
     }
 }

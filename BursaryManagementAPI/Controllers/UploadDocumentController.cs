@@ -2,15 +2,11 @@
 using BusinessLogic;
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 
 namespace BursaryManagementAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
     public class UploadDocumentController : ControllerBase
     {
         private readonly UploadDocumentBLL _uploadDocumentBLL;
@@ -21,17 +17,14 @@ namespace BursaryManagementAPI.Controllers
         }
 
         [HttpPost("{requestID}/upload")]
-        [Authorize()]
         public async Task<ActionResult> UploadDocument(int requestID, [FromForm] BusinessLogic.Models.UploadDocument uploadDocument)
         {
             try
             {
                 return await _uploadDocumentBLL.UploadDocument(requestID, uploadDocument);
             }
-            catch (Exception e)
-
+            catch (Exception)
             {
-                Console.WriteLine(e.Message);
                 return StatusCode(500, "An error occurred while uploading the document.");
             }
         }

@@ -51,12 +51,6 @@ namespace BursaryManagementAPI.Controllers
         }
 
 
-        [Authorize(Roles = Roles.BBDAdmin)]
-        [HttpGet("UserByEmail/{email}")]
-        
-        public async Task<IActionResult> getUser(string email)
-        {
-            return Ok(_userManager.getUser(email).Result);
-        }
+
     }
 }

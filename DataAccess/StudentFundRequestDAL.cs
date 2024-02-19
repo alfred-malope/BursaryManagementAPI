@@ -86,44 +86,62 @@ namespace DataAccess
             }
         }
 
-        //public void UpdateRequest(int id, StudentFundRequest updatedRequest)
-        //{
-        //    try
-        //    {
-        //        _connection.Open();
-        //        string query = "UPDATE StudentFundRequest SET StudentID = @StudentID, UniversityID = @UniversityID, Grade = @Grade, Amount = @Amount, ApplicationStatus = @ApplicationStatus, Comment = @Comment WHERE ApplicationID = @ApplicationID";
-        //        using (SqlCommand command = new SqlCommand(query, _connection))
-        //        {
-        //            command.Parameters.AddWithValue("@StudentID", updatedRequest.StudentID);
-        //            command.Parameters.AddWithValue("@Grade", updatedRequest.Grade);
-        //            command.Parameters.AddWithValue("@Amount", updatedRequest.Amount);
-        //            command.Parameters.AddWithValue("@ApplicationStatus", updatedRequest.StatusID);
-        //            command.Parameters.AddWithValue("@Comment", updatedRequest.Comment);
-        //            command.Parameters.AddWithValue("@ApplicationID", id);
-
-        //            int rowsAffected = command.ExecuteNonQuery();
-        //            if (rowsAffected == 0)
-        //            {
-        //                throw new KeyNotFoundException("Student fund request not found!");
-        //            }
-        //        }
-        //    }
-        //    finally
-        //    {
-        //        _connection.Close();
-        //    }
-        //}
-
-        public void UpdateApplicationStatus(int applicationId, int status)
+        public void UpdateRequest(int id, UpdateStudentFundRequest updatedRequest)
         {
             try
             {
                 _connection.Open();
-                string query = "UPDATE StudentFundRequest SET ApplicationStatus = @Status WHERE ApplicationID = @ApplicationID";
+                string query = "UPDATE StudentFundRequest SET Grade = @Grade, Amount = @Amount WHERE ID = @ID AND StatusID = 3";
+                using (SqlCommand command = new SqlCommand(query, _connection))
+                {
+                    command.Parameters.AddWithValue("@Grade", updatedRequest.Grade);
+                    command.Parameters.AddWithValue("@Amount", updatedRequest.Amount);
+                    command.Parameters.AddWithValue("@ID", id);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected == 0)
+                    {
+                        throw new KeyNotFoundException("Student fund request not found!");
+                    }
+                }
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
+        public void UpdateApplicationStatus(int applicationId, int status, string comment)
+        {
+            try
+            {
+                _connection.Open();
+
+                if (status == 2 && string.IsNullOrWhiteSpace(comment))
+                {
+                    throw new ArgumentException("A comment is required when changing the status to 2.");
+                }
+
+                string query;
+
+                if (!string.IsNullOrWhiteSpace(comment))
+                {
+                    query = "UPDATE StudentFundRequest SET StatusID = @Status, Comment = @Comment WHERE ID = @ID";
+                }
+                else
+                {
+                    query = "UPDATE StudentFundRequest SET StatusID = @Status WHERE ID = @ID";
+                }
+
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
                     command.Parameters.AddWithValue("@Status", status);
-                    command.Parameters.AddWithValue("@ApplicationID", applicationId);
+                    command.Parameters.AddWithValue("@ID", applicationId);
+
+                    if (!string.IsNullOrWhiteSpace(comment))
+                    {
+                        command.Parameters.AddWithValue("@Comment", comment);
+                    }
 
                     command.ExecuteNonQuery();
                 }

@@ -58,10 +58,6 @@ namespace DataAccess
                             LastName = reader.GetString(2),
                             ContactID = reader.GetInt32(3),
                         };
-                        Console.WriteLine(user.ID);
-                        Console.WriteLine(user.FirstName);
-                        Console.WriteLine(user.LastName);
-                        Console.WriteLine(user.ContactID);
 
                     }
                 }

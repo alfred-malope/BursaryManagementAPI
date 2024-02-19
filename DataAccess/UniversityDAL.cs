@@ -1,9 +1,8 @@
 ﻿
-
-
 using DataAccess.Entity;
 using Microsoft.Data.SqlClient;
 using System.Data;
+
 
 
 public class UniversityDAL(SqlConnection connection)
@@ -13,10 +12,10 @@ public class UniversityDAL(SqlConnection connection)
 
     public List<University> GetUniversities()
     {
-        _connection.Open();
+        
         List<University> universities = new List<University>();
         string query = "SELECT * FROM University";
-        SqlDataReader reader = new SqlCommand(query,_connection).ExecuteReader();
+        SqlDataReader reader = new SqlCommand(query, _connection).ExecuteReader();
 
 
         while (reader.Read())
@@ -32,7 +31,7 @@ public class UniversityDAL(SqlConnection connection)
 
 
         reader.Close();
-        _connection.Close();
+        
 
         return universities;
     }
@@ -52,11 +51,16 @@ public class UniversityDAL(SqlConnection connection)
         decimal budget = allocation.getBudget() / numberOfInstitutions;
         universityIDs.ForEach(id =>
         {
-            new UniversityFundAllocation(budget, DateTime.Now, id, allocation.getID()).save();
+            SaveUniversityFundAllocation( new UniversityFundAllocation(budget, DateTime.Now, id, allocation.getID()));
         });
         _connection.Close();
 
     }
+
+    //public List<UniversityResponse> GetUniversityFundAllocations()
+    //{
+
+    //}
 
     public List<BBDAllocation> BBDAllocations()
     {
@@ -77,7 +81,7 @@ public class UniversityDAL(SqlConnection connection)
             Console.WriteLine(allocation.getBudget());
             allocations.Add(allocation);
         }
-
+        reader.Close();
         return allocations;
     }
 

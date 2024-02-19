@@ -2,6 +2,7 @@
 using DataAccess;
 using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace BusinessLogic
 {
@@ -51,32 +52,37 @@ namespace BusinessLogic
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Error creating student fund request", ex);
+                    throw new Exception("Error creating student fund request" + ex.StackTrace);
                 }
             else
                 throw new ArgumentNullException(nameof(newRequest));
         }
 
-        //public void UpdateRequest(int id, StudentFundRequest updatedRequest)
-        //{
-        //    if (updatedRequest == null)
-        //        throw new ArgumentNullException(nameof(updatedRequest));
+        public void UpdateRequest(int id, Models.UpdateStudentFundRequest newRequest)
+        {
+            if (newRequest == null)
+                throw new ArgumentNullException(nameof(newRequest));
 
-        //    try
-        //    {
-        //        _repository.UpdateRequest(id, updatedRequest);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception($"Error updating student fund request: {ex.Message}");
-        //    }
-        //}
+            try
+            {
+                UpdateStudentFundRequest updatedRequest = new()
+                {
+                    Grade = newRequest.Grade,
+                    Amount = newRequest.Amount
+                };
+                _repository.UpdateRequest(id, updatedRequest);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating student fund request: {ex.Message}");
+            }
+        }
 
         public void ApproveApplication(int applicationId)
         {
             try
             {
-                _repository.UpdateApplicationStatus(applicationId, 1); 
+                _repository.UpdateApplicationStatus(applicationId, 1, ""); 
             }
             catch (Exception ex)
             {
@@ -84,11 +90,11 @@ namespace BusinessLogic
             }
         }
 
-        public void RejectApplication(int applicationId)
+        public void RejectApplication(int applicationId,string comment)
         {
             try
             {
-                _repository.UpdateApplicationStatus(applicationId, 2); 
+                _repository.UpdateApplicationStatus(applicationId, 2, comment); 
             }
             catch (Exception ex)
             {

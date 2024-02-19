@@ -17,7 +17,7 @@ namespace BusinessLogic
             _uploadDocumentDAL = uploadDocumentDAL;
         }
 
-        public async Task<ActionResult> UploadDocument(int requestID, BusinessLogic.Models.UploadDocument uploadDocument)
+        public async Task<ActionResult> UploadDocument(int requestID, Models.UploadDocument uploadDocument)
         {
             try
             {
@@ -26,7 +26,6 @@ namespace BusinessLogic
                     File = uploadDocument.File,
                     DocumentType = uploadDocument.DocumentType
                 };
-                // Business logic for document upload
                 return await _uploadDocumentDAL.UploadDocument(requestID, upload);
             }
             catch (Exception ex)
