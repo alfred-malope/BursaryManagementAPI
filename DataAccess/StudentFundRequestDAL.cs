@@ -81,6 +81,7 @@ namespace DataAccess
             }
             catch(Exception e)
             {
+                
                 Console.WriteLine($"This is the catch: {e.Message}\n This is stackTrace: {e.StackTrace}");
             }
             finally
@@ -102,6 +103,7 @@ namespace DataAccess
                     command.Parameters.AddWithValue("@Amount", newRequest.Amount);
 
                     command.ExecuteNonQuery();
+                    _connection.Close();
                 }
             }
             finally

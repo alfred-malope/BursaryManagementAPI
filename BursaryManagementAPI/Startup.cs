@@ -46,7 +46,11 @@ public class Startup
         services.AddScoped<StudentFundRequestDAL>();
         services.AddScoped<StudentFundRequestBLL>();
         services.AddScoped<UploadDocumentBLL>();
-       
+        services.AddScoped<UniversityDAL>();
+        services.AddScoped<UniversityFundRequestBLL>();
+        services.AddScoped<AdminBLL>();
+        services.AddScoped<AdminDAL>();
+
 
 
         //adding Azure services to the dependency injection container (scoped to instantiate a new object when requested )

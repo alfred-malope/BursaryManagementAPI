@@ -38,10 +38,8 @@ public class UniversityDAL(SqlConnection connection)
 
     public void allocate()
     {
-        _connection.Open();
-        // get all the universities ids only stored in a list using linq
-        List<int> universityIDs = GetUniversities().Select(u => u.GetID()).ToList();
 
+        List<int> universityIDs = GetUniversities().Select(u => u.GetID()).ToList();
         int numberOfInstitutions = universityIDs.Count();
         BBDAllocation? allocation = GetBBDAllocationByYear(DateTime.Now.Year);
         if (allocation == null)
@@ -51,16 +49,13 @@ public class UniversityDAL(SqlConnection connection)
         decimal budget = allocation.getBudget() / numberOfInstitutions;
         universityIDs.ForEach(id =>
         {
-            SaveUniversityFundAllocation( new UniversityFundAllocation(budget, DateTime.Now, id, allocation.getID()));
+            var universityFundAllocation = new UniversityFundAllocation(budget, DateTime.Now, id, allocation.getID());
+            SaveUniversityFundAllocation(universityFundAllocation);
         });
-        _connection.Close();
+        connection.Close();
 
     }
 
-    //public List<UniversityResponse> GetUniversityFundAllocations()
-    //{
-
-    //}
 
     public List<BBDAllocation> BBDAllocations()
     {
@@ -103,6 +98,59 @@ public class UniversityDAL(SqlConnection connection)
             command.Parameters.AddWithValue("@BBDAllocationID", allocation.getBBDAllocationID());
             command.ExecuteNonQuery();
         }
+    }
+
+    public void SaveUniversityFundRequest(UniversityFundRequest request)
+    {
+        using (SqlCommand command = new SqlCommand())
+        {
+            command.Connection = connection;
+            command.CommandType = CommandType.Text;
+            command.CommandText = "INSERT INTO UniversityFundRequest (UniversityID, DateCreated, Amount, StatusID, Comment) VALUES (@UniversityID, @DateCreated, @Amount, @StatusID, @Comment)";
+            command.Parameters.AddWithValue("@UniversityID", request.getUniversityID());
+            command.Parameters.AddWithValue("@DateCreated", request.getDateCreated());
+            command.Parameters.AddWithValue("@Amount", request.getAmount());
+            command.Parameters.AddWithValue("@StatusID", request.getStatusID());
+            command.Parameters.AddWithValue("@Comment", request.getComment());
+            command.ExecuteNonQuery();
+        }
+    }
+
+    public List<UniversityFundRequest> GetUniversityFundRequests()
+    {
+        connection.Open();
+        List<UniversityFundRequest> requests = new List<UniversityFundRequest>();
+        string query = "SELECT * FROM UniversityFundRequest";
+        SqlDataReader reader = new SqlCommand(query, connection).ExecuteReader();
+
+        while (reader.Read())
+        {
+            UniversityFundRequest request = new(
+                                      universityID: reader.GetInt32(0),
+                                      dateCreated: reader.GetDateTime(2),
+                                      amount: (decimal)reader.GetSqlMoney(3),
+                                      statusID: reader.GetString(4),
+                                      comment: reader.GetString(5)
+                                                                                                                                                                                 );
+            requests.Add(request);
+        }
+
+        reader.Close();
+        connection.Close();
+
+        return requests;
+    }
+
+    public void UpdateUniversityFundRequestStatusAndComment(int id, string statusID, string comment)
+    {
+        connection.Open();
+        string query = "UPDATE UniversityFundRequest SET StatusID = @StatusID, Comment = @Comment WHERE ID = @ID";
+        SqlCommand command = new SqlCommand(query, connection);
+        command.Parameters.AddWithValue("@StatusID", statusID);
+        command.Parameters.AddWithValue("@Comment", comment);
+        command.Parameters.AddWithValue("@ID", id);
+        command.ExecuteNonQuery();
+        connection.Close();
     }
 }
 
