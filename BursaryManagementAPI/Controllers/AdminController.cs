@@ -17,6 +17,8 @@ namespace BursaryManagementAPI.Controllers
             _adminBLL = adminBLL;
         }
 
+
+
         [Route("universityRequests")]
         [HttpGet]
         public ActionResult<IEnumerable<UniversityRequest>> Get()
@@ -32,7 +34,8 @@ namespace BursaryManagementAPI.Controllers
         }
 
 
-        [Route("UniversityYearAllocations")]
+
+        [Route("universityYearAllocations")]
         [HttpGet]
         public ActionResult<IEnumerable<AllocationDetails>> GetYearAllocations()
         {
@@ -45,7 +48,27 @@ namespace BursaryManagementAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        
+
+
+        [Route("allocateBuget")]
+        [HttpPost]
+        public ActionResult Post([FromBody] newAllocation value)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                _adminBLL.Allocate();
+                return Ok(new status("Succesful", "Budget allocated in the all the institutions"));
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new status("Unsuccessful", "Error: " + ex.Message));
+            }
+        }
+
 
 
         [Route("newUniversityRequest")]
@@ -70,6 +93,8 @@ namespace BursaryManagementAPI.Controllers
             }
 
         }
+
+
 
         [Route("updateUniversityRequest")]
         [HttpPut]

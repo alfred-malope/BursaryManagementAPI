@@ -13,14 +13,16 @@ namespace DataAccess
   public class AdminDAL
     {
       private readonly SqlConnection _connection;
+    private readonly UniversityDAL universityDAL;
 
       public AdminDAL(SqlConnection connection)
         {
           _connection = connection;
+          universityDAL = new UniversityDAL(_connection);
       }
 
 
-    
+   
 
         public IEnumerable<UniversityRequest>? GetAllUniversityFundRequests()
         {
@@ -173,5 +175,10 @@ namespace DataAccess
                 _connection.Close();
             }
             }
+
+        public void Allocate()
+        {
+            universityDAL.allocate();
         }
+  }
 }

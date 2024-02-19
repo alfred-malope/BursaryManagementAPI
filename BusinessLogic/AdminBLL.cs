@@ -69,5 +69,18 @@ namespace BusinessLogic
             }
         }
 
+
+        public void Allocate()
+        {
+            try
+            {
+                _repository.Allocate();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error allocating funds", ex);
+            }
+        }
+
     }
 }
