@@ -52,7 +52,7 @@ namespace BusinessLogic
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Error creating student fund request", ex);
+                    throw new Exception("Error creating student fund request" + ex.StackTrace);
                 }
             else
                 throw new ArgumentNullException(nameof(newRequest));

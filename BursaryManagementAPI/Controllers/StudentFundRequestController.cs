@@ -1,5 +1,6 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -7,7 +8,7 @@ using System;
 using System.Collections.Generic;
 
 namespace BursaryManagementAPI.Controllers
-{
+{   
     [Route("api/[controller]")]
     [ApiController]
     public class StudentFundRequestController : ControllerBase
@@ -76,7 +77,7 @@ namespace BursaryManagementAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error updating student fund request: {ex.Message}");
             }
         }
-
+        [Authorize(Roles = Roles.BBDAdmin)]
         [HttpPost("{applicationId}/approve")]
         public ActionResult ApproveApplication(int applicationId)
         {
@@ -91,6 +92,7 @@ namespace BursaryManagementAPI.Controllers
             }
         }
 
+        [Authorize(Roles = Roles.BBDAdmin)]
         [HttpPost("{applicationId}/reject")]
         public ActionResult RejectApplication(int applicationId, string comment)
         {
