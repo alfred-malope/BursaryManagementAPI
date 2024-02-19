@@ -49,6 +49,7 @@ namespace DataAccess
                         requests.Add(request);
                     }
                 }
+                _connection.Close();
                 return requests;
             }
             finally
@@ -62,23 +63,25 @@ namespace DataAccess
             try
             {
                 _connection.Open();
-                string query = "EXEC [dbo].[CreateStudentFundRequestForNewStudent] @IDNumber,@FirstName,@LastName,@Email,@PhoneNumber,@GenderName,@RaceName,@UniversityID,@BirthDate,@Grade,@Amount";
+
+                string query = "EXEC [dbo].[CreateStudentFundRequestForNewStudent] @IDNumber,@GenderName,@RaceName,@UniversityID,@BirthDate,@Grade,@Amount,@UserID";
                 using (SqlCommand command = new SqlCommand(query, _connection))
                 {
                     command.Parameters.AddWithValue("@IDNumber", newRequest.IDNumber);
-                    command.Parameters.AddWithValue("@FirstName", newRequest.FirstName);
-                    command.Parameters.AddWithValue("@LastName", newRequest.LastName);
-                    command.Parameters.AddWithValue("@Email", newRequest.Email);
-                    command.Parameters.AddWithValue("@PhoneNumber", newRequest.PhoneNumber);
                     command.Parameters.AddWithValue("@GenderName", newRequest.GenderName);
                     command.Parameters.AddWithValue("@RaceName", newRequest.RaceName);
                     command.Parameters.AddWithValue("@UniversityID", newRequest.UniversityID);
                     command.Parameters.AddWithValue("@BirthDate", newRequest.BirthDate);
                     command.Parameters.AddWithValue("@Grade", newRequest.Grade);
                     command.Parameters.AddWithValue("@Amount", newRequest.Amount);
+                    command.Parameters.AddWithValue("@UserID", newRequest.UserID);
 
                     command.ExecuteNonQuery();
                 }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"This is the catch: {e.Message}\n This is stackTrace: {e.StackTrace}");
             }
             finally
             {

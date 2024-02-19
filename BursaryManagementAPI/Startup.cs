@@ -42,7 +42,6 @@ public class Startup
         
         services.AddScoped<UniversityDAL>();
         services.AddScoped<UserDAL>();
-        services.AddScoped<ContactsDAL>();
         services.AddScoped<UploadDocumentDAL>();
         services.AddScoped<StudentFundRequestDAL>();
         services.AddScoped<StudentFundRequestBLL>();
@@ -59,7 +58,7 @@ public class Startup
         });
 
 
-        services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString, b => b.MigrationsAssembly("BursaryManagementAPI")));
+        _ = services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
         services.AddIdentity<IdentityUser, IdentityRole>(options =>
         {

@@ -15,22 +15,18 @@ namespace BusinessLogic
 {
     public class UserBLL
     {
-        private UserManager<IdentityUser> _userManager;
         private UserDAL _userDAL;
-        private ContactsDAL _contactsDAL;
         private IConfiguration _configuration;
-        public UserBLL(UserManager<IdentityUser> userManager, UserDAL userDAL, ContactsDAL contactsDAL, IConfiguration configuration)
+        public UserBLL(UserDAL userDAL, IConfiguration configuration)
         {
             _configuration = configuration;
-            _contactsDAL = contactsDAL;
-            _userManager = userManager;
             _userDAL = userDAL;
             _configuration = configuration;
         }
 
         public async Task<UserManagerResponse> LoginUserAsync(Login model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userDAL.checkUserByEmail(model.Email);
             if (user == null)
             {
                 return new UserManagerResponse
@@ -40,7 +36,7 @@ namespace BusinessLogic
                 };
             }
 
-            bool result = await _userManager.CheckPasswordAsync(user, model.Password);
+            bool result = await _userDAL.checkUserPassword(user, model.Password);
 
             if (result == false)
             {
@@ -57,7 +53,7 @@ namespace BusinessLogic
                 new Claim(ClaimTypes.NameIdentifier, user.Id)
                 
             };
-            var roles = await _userManager.GetRolesAsync(user);
+            var roles = await _userDAL.getUserRoles(user);
             var claimsWithRoles = roles.Select(role => new Claim(ClaimTypes.Role, role));
             var allClaims = claims.Concat(claimsWithRoles);
 
@@ -70,10 +66,6 @@ namespace BusinessLogic
                 expires: DateTime.Now.AddDays(30),
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256));
 
-            var userClaims = await _userManager.GetClaimsAsync(user);
-
-            var userRoles = await _userManager.GetRolesAsync(user);
-            Console.WriteLine($"User roles: {string.Join(", ", userRoles)}");
             string tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
             return new UserManagerResponse
@@ -84,7 +76,7 @@ namespace BusinessLogic
             };
         }
 
-        public async Task<UserManagerResponse> RegisterUserAsync(Register model)
+        public UserManagerResponse ProcessRegistration(Register model)
         {
             if(model == null)
             {
@@ -108,19 +100,16 @@ namespace BusinessLogic
                 
             };
 
-            
+             IdentityResult result = _userDAL.RegisterIdentityUser(applicationUser, model.Password, model.Role).Result;
 
-            var result = await _userManager.CreateAsync(applicationUser, model.Password);
-
-            var result2 = await _userManager.AddToRoleAsync(applicationUser, model.Role);
-
-            if(result.Succeeded)
+            if (result.Succeeded)
             {
-                ContactDetails contacts = new ContactDetails { 
+                ContactDetails contacts = new ContactDetails
+                {
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
                 };
-                int contactId = _contactsDAL.InsertContactsAndGetPrimaryKey(contacts);
+                int contactId = _userDAL.InsertContactsAndGetPrimaryKey(contacts);
 
                 User user = new User
                 {
@@ -129,9 +118,12 @@ namespace BusinessLogic
                     LastName = model.LastName,
                 };
                 int userId = _userDAL.InsertUserAndGetPrimaryKey(user);
+                
+                _userDAL.InsertToUserRole(userId, model.Role);
 
-                
-                
+
+
+
 
                 return new UserManagerResponse
                 {
@@ -145,7 +137,7 @@ namespace BusinessLogic
             {
                 Message = "User not created",
                 isSuccess = false,
-                Errors = result.Errors.Select(error => error.Description)
+                Errors = result.Errors.FirstOrDefault().Description
             };
         }
 

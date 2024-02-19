@@ -3,15 +3,18 @@ using DataAccess;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using BusinessLogic.Models.Response;
+using Microsoft.AspNetCore.Identity;
 
 namespace BusinessLogic
 {
     public class StudentFundRequestBLL
     {
         private readonly StudentFundRequestDAL _repository;
-
-        public StudentFundRequestBLL(StudentFundRequestDAL repository)
+        private readonly UserDAL _userDAL;
+        public StudentFundRequestBLL(StudentFundRequestDAL repository, UserDAL userDAL)
         {
+            _userDAL = userDAL;
             _repository = repository;
         }
 
@@ -32,23 +35,72 @@ namespace BusinessLogic
             if (newRequest != null)
                 try
                 {
-                    // Convert the business logic model to the data access model
-                    CreateStudentFundRequestForNewStudent dataAccessModel = new()
+                    Models.Register userRequest = new()
                     {
-                        IDNumber = newRequest.IDNumber,
+
                         FirstName = newRequest.FirstName,
                         LastName = newRequest.LastName,
                         Email = newRequest.Email,
                         PhoneNumber = newRequest.PhoneNumber,
-                        GenderName = newRequest.GenderName,
-                        RaceName = newRequest.RaceName,
-                        UniversityID = newRequest.UniversityID,
-                        BirthDate = newRequest.BirthDate,
-                        Grade = newRequest.Grade,
-                        Amount = newRequest.Amount
+                        Role = "Student",
+                        Password = "P@ssword1",
+                        ConfirmPassword = "P@ssword1"
+
+                    };
+                    IdentityUser StudentUser = new IdentityUser
+                    {
+                        Email = newRequest.Email,
+                        UserName = newRequest.Email,
+                        PhoneNumber = newRequest.PhoneNumber,
                     };
 
-                    _repository.Create(dataAccessModel);
+                    var result = _userDAL.RegisterIdentityUser(StudentUser, userRequest.Password, userRequest.Role).Result;
+                    if (result.Succeeded)//Check if user Identity has been added successfully
+                    {
+                        //Create Contacts object and insert to table,
+                        ContactDetails contactDetails = new ContactDetails
+                        {
+                            Email = newRequest.Email,
+                            PhoneNumber = newRequest.PhoneNumber,
+                        };
+                        int contactId = _userDAL.InsertContactsAndGetPrimaryKey(contactDetails);
+
+                        //create User object and insert User
+                        User user = new User
+                        {
+                            FirstName = newRequest.FirstName,
+                            LastName = newRequest.LastName,
+                            ContactID = contactId,
+                        };
+                        int userId = _userDAL.InsertUserAndGetPrimaryKey(user);
+
+                        //insert UserRole Reference
+                        _userDAL.InsertToUserRole(userId, userRequest.Role);
+
+
+
+
+                        // Convert the business logic model to the data access model
+                        CreateStudentFundRequestForNewStudent dataAccessModel = new()
+                        {
+                            IDNumber = newRequest.IDNumber,
+                            FirstName = newRequest.FirstName,
+                            LastName = newRequest.LastName,
+                            Email = newRequest.Email,
+                            PhoneNumber = newRequest.PhoneNumber,
+                            GenderName = newRequest.GenderName,
+                            RaceName = newRequest.RaceName,
+                            UniversityID = newRequest.UniversityID,
+                            BirthDate = newRequest.BirthDate,
+                            Grade = newRequest.Grade,
+                            Amount = newRequest.Amount,
+                            UserID = userId
+
+                        };
+
+                        _repository.Create(dataAccessModel);
+
+                    }
                 }
                 catch (Exception ex)
                 {

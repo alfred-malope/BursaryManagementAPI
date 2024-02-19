@@ -14,10 +14,12 @@ namespace BursaryManagementAPI.Controllers
     public class StudentFundRequestController : ControllerBase
     {
         private readonly StudentFundRequestBLL _StudentFundRequestBLL;
+        
 
         public StudentFundRequestController(StudentFundRequestBLL StudentFundRequestBLL)
         {
             _StudentFundRequestBLL = StudentFundRequestBLL;
+            
         }
 
         [HttpGet]
@@ -34,7 +36,7 @@ namespace BursaryManagementAPI.Controllers
             }
         }
 
-        [HttpPost("CreateStudentFundRequestForNewStudent")]
+        [HttpPost("create")]
         public ActionResult Create([FromBody] CreateStudentFundRequestForNewStudent newRequest)
         {
             if (!ModelState.IsValid)
@@ -44,6 +46,7 @@ namespace BursaryManagementAPI.Controllers
 
             try
             {
+                
                 _StudentFundRequestBLL.Create(newRequest);
                 return Ok("Student fund request created successfully!");
             }
@@ -55,7 +58,7 @@ namespace BursaryManagementAPI.Controllers
 
 
 
-        [HttpPut("updateRequest/{id}")]
+        [HttpPut("update/{id}")]
         public ActionResult UpdateRequest(int id, [FromBody] UpdateStudentFundRequest updatedRequest)
         {
             if (!ModelState.IsValid)
