@@ -53,8 +53,26 @@ namespace BursaryManagementAPI.Controllers
             }
         }
 
+        [HttpPost("ExistingStudent")]
+        public ActionResult CreateForExistingStudent([FromBody] ExistingStudent newRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
+            try
+            {
+                _StudentFundRequestBLL.CreateForExistingStudent(newRequest);
+                return Ok("Student fund request created successfully!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error creating student fund request: {ex.Message}");
+            }
+        }
 
+        [Authorize(Roles = Roles.UniversityAdmin)]
         [HttpPut("updateRequest/{id}")]
         public ActionResult UpdateRequest(int id, [FromBody] UpdateStudentFundRequest updatedRequest)
         {

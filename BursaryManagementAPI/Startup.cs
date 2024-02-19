@@ -59,7 +59,7 @@ public class Startup
         });
 
 
-        services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString, b => b.MigrationsAssembly("BursaryManagementAPI")));
+        services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
         services.AddIdentity<IdentityUser, IdentityRole>(options =>
         {
