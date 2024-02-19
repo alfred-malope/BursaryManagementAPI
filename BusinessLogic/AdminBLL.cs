@@ -56,5 +56,18 @@ namespace BusinessLogic
             }
         }
 
+
+        public IEnumerable<AllocationDetails> GetAllocationDetails()
+        {
+            try
+            {
+                return _repository.GetUniversityFundAllocations();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting allocation details: {ex.Message}");
+            }
+        }
+
     }
 }

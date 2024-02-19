@@ -30,6 +30,21 @@ namespace BursaryManagementAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+
+        [Route("UniversityYearAllocations")]
+        [HttpGet]
+        public ActionResult<IEnumerable<AllocationDetails>> GetYearAllocations()
+        {
+            try
+            {
+                return Ok(_adminBLL.GetAllocationDetails());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         
 
 
