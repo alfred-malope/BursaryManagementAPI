@@ -54,4 +54,4 @@ jobs:
           app-name: 'BursaryManagementAPI'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_44A2B6C9830D4F6396754CF450E85A71 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_571C6ABC249E47C98FC6B4740D96BB6E }}
