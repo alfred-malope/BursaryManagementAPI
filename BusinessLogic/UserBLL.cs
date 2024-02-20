@@ -127,7 +127,7 @@ namespace BusinessLogic
 
                 return new UserManagerResponse
                 {
-                    Message = "User created",
+                    Message = $"User created\nDetails:\nUsername: {model.Email}",
                     isSuccess = true
                 };
             }

@@ -1,5 +1,7 @@
 ﻿using BusinessLogic;
+using BusinessLogic.Models;
 using DataAccess.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -14,6 +16,7 @@ namespace BursaryManagementAPI.Controllers
 
         [Route("GetAllUniversityRequests")]
         [HttpGet]
+        [Authorize(Roles = Roles.BBDAdmin)]
         public ActionResult<IEnumerable<UniversityRequest>> Get()
         {
             try
@@ -28,6 +31,7 @@ namespace BursaryManagementAPI.Controllers
 
         [Route("GetUniversityAllocationsByYear")]
         [HttpGet]
+        [Authorize(Roles = Roles.BBDAdmin)]
         public ActionResult<IEnumerable<AllocationDetails>> GetYearAllocations()
         {
             try
@@ -42,7 +46,8 @@ namespace BursaryManagementAPI.Controllers
 
         [Route("allocateBuget")]
         [HttpPost]
-        public ActionResult Post([FromBody] newAllocation value)
+        [Authorize(Roles = Roles.BBDAdmin)]
+        public ActionResult Post()
         {
             if (!ModelState.IsValid)
             {
@@ -61,6 +66,8 @@ namespace BursaryManagementAPI.Controllers
 
         [Route("newUniversityRequest")]
         [HttpPost]
+        [Authorize(Roles =Roles.UniversityAdmin)]
+        [Authorize(Roles = Roles.BBDAdmin)]
         public void Post(int universityID, decimal amount, string comment)
         {
             if (universityID == 0 || amount == 0 || comment == null)
@@ -82,6 +89,7 @@ namespace BursaryManagementAPI.Controllers
 
         [Route("updateUniversityRequest")]
         [HttpPut]
+        [Authorize(Roles = Roles.BBDAdmin)]
         public void Put(int requestId, int statusId)
         {
             if (requestId == 0 || statusId == 0)
