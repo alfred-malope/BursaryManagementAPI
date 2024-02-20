@@ -19,6 +19,9 @@ using BursaryManagementAPI;
 using System.Security.Claims;
 using BusinessLogic.Models;
 
+/// <summary>
+/// The startup.
+/// </summary>
 
 public class Startup
 {

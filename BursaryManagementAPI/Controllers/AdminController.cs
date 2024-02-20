@@ -8,16 +8,11 @@ namespace BursaryManagementAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class AdminController : ControllerBase
+    public class AdminController(AdminBLL adminBLL) : ControllerBase
     {
-        private readonly AdminBLL _adminBLL;
+        private readonly AdminBLL _adminBLL = adminBLL;
 
-        public AdminController(AdminBLL adminBLL)
-        {
-            _adminBLL = adminBLL;
-        }
-
-        [Route("universityRequests")]
+        [Route("GetAllUniversityRequests")]
         [HttpGet]
         public ActionResult<IEnumerable<UniversityRequest>> Get()
         {
@@ -30,8 +25,39 @@ namespace BursaryManagementAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        
 
+        [Route("GetUniversityAllocationsByYear")]
+        [HttpGet]
+        public ActionResult<IEnumerable<AllocationDetails>> GetYearAllocations()
+        {
+            try
+            {
+                return Ok(_adminBLL.GetAllocationDetails());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [Route("allocateBuget")]
+        [HttpPost]
+        public ActionResult Post([FromBody] newAllocation value)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                _adminBLL.Allocate();
+                return Ok(new status("Succesful", "Budget allocated in the all the institutions"));
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, new status("Unsuccessful", "Error: " + ex.Message));
+            }
+        }
 
         [Route("newUniversityRequest")]
         [HttpPost]
@@ -45,22 +71,20 @@ namespace BursaryManagementAPI.Controllers
             {
                 try
                 {
-                  Ok(_adminBLL.NewUniversityRequest(universityID, amount, comment));
+                    Ok(_adminBLL.NewUniversityRequest(universityID, amount, comment));
                 }
                 catch (Exception ex)
                 {
-                 BadRequest(ex.Message);
+                    BadRequest(ex.Message);
                 }
-               
             }
-
         }
 
         [Route("updateUniversityRequest")]
         [HttpPut]
-        public void Put(int requestId, int statusId )
+        public void Put(int requestId, int statusId)
         {
-            if (requestId == 0 || statusId == 0 )
+            if (requestId == 0 || statusId == 0)
             {
                 BadRequest("Invalid input");
             }
@@ -76,6 +100,5 @@ namespace BursaryManagementAPI.Controllers
                 }
             }
         }
-
     }
 }

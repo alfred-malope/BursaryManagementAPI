@@ -5,14 +5,9 @@ using System.Collections.Generic;
 
 namespace DataAccess
 {
-    public class StudentFundRequestDAL
+    public class StudentFundRequestDAL(SqlConnection connection)
     {
-        private readonly SqlConnection _connection;
-
-        public StudentFundRequestDAL(SqlConnection connection)
-        {
-            _connection = connection;
-        }
+        private readonly SqlConnection _connection = connection;
 
         public IEnumerable<StudentFundRequest> GetAllRequests()
         {
@@ -79,9 +74,8 @@ namespace DataAccess
                     command.ExecuteNonQuery();
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                
                 Console.WriteLine($"This is the catch: {e.Message}\n This is stackTrace: {e.StackTrace}");
             }
             finally
@@ -126,8 +120,8 @@ namespace DataAccess
 
                     int rowsAffected = command.ExecuteNonQuery();
                     if (rowsAffected == 0)
-                    {   
-                        _connection.Close() ;
+                    {
+                        _connection.Close();
                         throw new KeyNotFoundException("Student fund request not found!");
                     }
                 }
@@ -171,7 +165,7 @@ namespace DataAccess
                     }
 
                     command.ExecuteNonQuery();
-                    _connection.Close ();
+                    _connection.Close();
                 }
             }
             finally

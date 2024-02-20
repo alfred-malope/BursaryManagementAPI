@@ -1,24 +1,22 @@
 ﻿using BusinessLogic.Models.Response;
-using DataAccess.Entity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 
 namespace BursaryManagementAPI.Controllers
 {
+    /// <summary>
+    /// The institution controller.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class InstitutionController : ControllerBase
+    public class InstitutionController(UniversityDAL universityDAL) : ControllerBase
     {
-        private readonly UniversityDAL _universityDAL;
-        private readonly SqlConnection _connection; 
+        private readonly UniversityDAL _universityDAL = universityDAL;
 
-        public InstitutionController(UniversityDAL universityDAL, SqlConnection connection)
-        {
-            _universityDAL = universityDAL;
-            _connection = connection;
-        }
+        /// <summary>
+        /// Gets the.
+        /// </summary>        /// <returns>An UniversityResponse.</returns>
         [HttpPost("Allocate")]
-        public UniversityResponse Get()
+        public UniversityResponse Allocate()
         {
             _universityDAL.allocate();
             return new UniversityResponse

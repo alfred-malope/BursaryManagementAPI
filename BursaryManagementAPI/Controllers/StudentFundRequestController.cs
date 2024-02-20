@@ -1,26 +1,18 @@
 ﻿using BusinessLogic;
 using BusinessLogic.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
 
 namespace BursaryManagementAPI.Controllers
-{   
+{
+    /// <summary>
+    /// The student fund request controller.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class StudentFundRequestController : ControllerBase
+    public class StudentFundRequestController(StudentFundRequestBLL StudentFundRequestBLL) : ControllerBase
     {
-        private readonly StudentFundRequestBLL _StudentFundRequestBLL;
-        
-
-        public StudentFundRequestController(StudentFundRequestBLL StudentFundRequestBLL)
-        {
-            _StudentFundRequestBLL = StudentFundRequestBLL;
-            
-        }
+        private readonly StudentFundRequestBLL _StudentFundRequestBLL = StudentFundRequestBLL;
 
         [HttpGet]
         public ActionResult<IEnumerable<StudentFundRequest>> GetAllRequests()
@@ -46,7 +38,6 @@ namespace BursaryManagementAPI.Controllers
 
             try
             {
-                
                 _StudentFundRequestBLL.Create(newRequest);
                 return Ok("Student fund request created successfully!");
             }
@@ -55,8 +46,6 @@ namespace BursaryManagementAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error creating student fund request: {ex.Message}");
             }
         }
-
-
 
         [HttpPut("update/{id}")]
         public ActionResult UpdateRequest(int id, [FromBody] UpdateStudentFundRequest updatedRequest)
@@ -80,6 +69,7 @@ namespace BursaryManagementAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, $"Error updating student fund request: {ex.Message}");
             }
         }
+
         [Authorize(Roles = Roles.BBDAdmin)]
         [HttpPost("{applicationId}/approve")]
         public ActionResult ApproveApplication(int applicationId)

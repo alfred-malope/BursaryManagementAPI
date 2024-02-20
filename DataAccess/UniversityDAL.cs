@@ -7,12 +7,29 @@ using System.Data;
 
 public class UniversityDAL(SqlConnection connection)
 {
-    private List<University> universities;
     SqlConnection _connection = connection;
+
+    /// <summary>
+    /// Switches the connection.
+    /// </summary>
+    /// <param name="mustBeOpen">If true, must be open.</param>
+    private void SwitchConnection(bool mustBeOpen)
+    {
+        switch (_connection.State)
+        {
+            case ConnectionState.Open:
+                if (mustBeOpen) break;
+                _connection.Close();
+                break;
+            case ConnectionState.Closed:
+                if (mustBeOpen) _connection.Open();
+                break;
+        }
+    }
 
     public List<University> GetUniversities()
     {
-        
+        SwitchConnection(true);
         List<University> universities = new List<University>();
         string query = "SELECT * FROM University";
         SqlDataReader reader = new SqlCommand(query, _connection).ExecuteReader();
@@ -29,16 +46,16 @@ public class UniversityDAL(SqlConnection connection)
             universities.Add(university);
         }
 
-
-        reader.Close();
         
+        reader.Close();
+        SwitchConnection(false);
 
         return universities;
     }
 
     public void allocate()
     {
-
+        SwitchConnection(true);
         List<int> universityIDs = GetUniversities().Select(u => u.GetID()).ToList();
         int numberOfInstitutions = universityIDs.Count();
         BBDAllocation? allocation = GetBBDAllocationByYear(DateTime.Now.Year);
@@ -52,7 +69,7 @@ public class UniversityDAL(SqlConnection connection)
             var universityFundAllocation = new UniversityFundAllocation(budget, DateTime.Now, id, allocation.getID());
             SaveUniversityFundAllocation(universityFundAllocation);
         });
-        connection.Close();
+        SwitchConnection(false);
 
     }
 
@@ -60,7 +77,7 @@ public class UniversityDAL(SqlConnection connection)
     public List<BBDAllocation> BBDAllocations()
     {
 
-
+        SwitchConnection(true);
         string query = "SELECT * FROM BBDAllocation";
         SqlDataReader reader = new SqlCommand(query, _connection).ExecuteReader();
         List<BBDAllocation> allocations = new List<BBDAllocation>();
@@ -77,6 +94,7 @@ public class UniversityDAL(SqlConnection connection)
             allocations.Add(allocation);
         }
         reader.Close();
+        SwitchConnection(false);
         return allocations;
     }
 
@@ -86,11 +104,10 @@ public class UniversityDAL(SqlConnection connection)
 
     public void SaveUniversityFundAllocation(UniversityFundAllocation allocation)
     {
-        using (SqlCommand command = new SqlCommand())
+        SwitchConnection(true);
+        string query = "INSERT INTO UniversityFundAllocation (Budget, DateAllocated, UniversityID, BBDAllocationID) VALUES (@Budget, @DateAllocated, @UniversityID, @BBDAllocationID)";
+        using (SqlCommand command = new SqlCommand(query, _connection))
         {
-            command.Connection = _connection;
-            command.CommandType = CommandType.Text;
-            command.CommandText = "INSERT INTO UniversityFundAllocation (Budget, DateAllocated, UniversityID, BBDAllocationID) VALUES (@Budget, @DateAllocated, @UniversityID, @BBDAllocationID)";
             Console.WriteLine(allocation.getBudget());
             command.Parameters.AddWithValue("@Budget", allocation.getBudget());
             command.Parameters.AddWithValue("@DateAllocated", allocation.getDateAllocated());
@@ -98,15 +115,14 @@ public class UniversityDAL(SqlConnection connection)
             command.Parameters.AddWithValue("@BBDAllocationID", allocation.getBBDAllocationID());
             command.ExecuteNonQuery();
         }
+        SwitchConnection(false);
     }
 
     public void SaveUniversityFundRequest(UniversityFundRequest request)
-    {
-        using (SqlCommand command = new SqlCommand())
+    {   SwitchConnection(true);
+        string query = "INSERT INTO UniversityFundRequest (UniversityID, DateCreated, Amount, StatusID, Comment) VALUES (@UniversityID, @DateCreated, @Amount, @StatusID, @Comment)";
+        using (SqlCommand command = new SqlCommand(query, _connection))
         {
-            command.Connection = connection;
-            command.CommandType = CommandType.Text;
-            command.CommandText = "INSERT INTO UniversityFundRequest (UniversityID, DateCreated, Amount, StatusID, Comment) VALUES (@UniversityID, @DateCreated, @Amount, @StatusID, @Comment)";
             command.Parameters.AddWithValue("@UniversityID", request.getUniversityID());
             command.Parameters.AddWithValue("@DateCreated", request.getDateCreated());
             command.Parameters.AddWithValue("@Amount", request.getAmount());
@@ -114,11 +130,12 @@ public class UniversityDAL(SqlConnection connection)
             command.Parameters.AddWithValue("@Comment", request.getComment());
             command.ExecuteNonQuery();
         }
+        SwitchConnection (false);
     }
 
     public List<UniversityFundRequest> GetUniversityFundRequests()
     {
-        connection.Open();
+        SwitchConnection(true);
         List<UniversityFundRequest> requests = new List<UniversityFundRequest>();
         string query = "SELECT * FROM UniversityFundRequest";
         SqlDataReader reader = new SqlCommand(query, connection).ExecuteReader();
@@ -136,21 +153,21 @@ public class UniversityDAL(SqlConnection connection)
         }
 
         reader.Close();
-        connection.Close();
+        SwitchConnection(false);
 
         return requests;
     }
 
     public void UpdateUniversityFundRequestStatusAndComment(int id, string statusID, string comment)
     {
-        connection.Open();
+        SwitchConnection (true);
         string query = "UPDATE UniversityFundRequest SET StatusID = @StatusID, Comment = @Comment WHERE ID = @ID";
         SqlCommand command = new SqlCommand(query, connection);
         command.Parameters.AddWithValue("@StatusID", statusID);
         command.Parameters.AddWithValue("@Comment", comment);
         command.Parameters.AddWithValue("@ID", id);
         command.ExecuteNonQuery();
-        connection.Close();
+        SwitchConnection (false);
     }
 }
 
