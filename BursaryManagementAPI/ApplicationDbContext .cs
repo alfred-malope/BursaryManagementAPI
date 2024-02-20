@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+/// <summary>
+/// The application db context.
+/// </summary>
 
 public class ApplicationDbContext : IdentityDbContext
 {

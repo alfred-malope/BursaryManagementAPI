@@ -9,15 +9,9 @@ using System.Threading.Tasks;
 namespace BusinessLogic
 
 {
-    public class AdminBLL
+    public class AdminBLL(AdminDAL repository)
     {
-        private readonly AdminDAL _repository;
-
-        public AdminBLL(AdminDAL repository)
-        {
-            _repository = repository;
-        }
-
+        private readonly AdminDAL _repository = repository;
 
         public IEnumerable<UniversityRequest> GetAllUniversityRequests()
         {
@@ -43,9 +37,8 @@ namespace BusinessLogic
             }
         }
 
-
-        public UniversityRequest NewUniversityRequest(int universityID, decimal amount, string comment) { 
-       
+        public UniversityRequest NewUniversityRequest(int universityID, decimal amount, string comment)
+        {
             try
             {
                 return _repository.NewUniversityFundRequest(universityID, amount, comment);
@@ -56,5 +49,28 @@ namespace BusinessLogic
             }
         }
 
+        public IEnumerable<AllocationDetails> GetAllocationDetails()
+        {
+            try
+            {
+                return _repository.GetUniversityFundAllocations();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error getting allocation details: {ex.Message}");
+            }
+        }
+
+        public void Allocate()
+        {
+            try
+            {
+                _repository.Allocate();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error allocating funds", ex);
+            }
+        }
     }
 }

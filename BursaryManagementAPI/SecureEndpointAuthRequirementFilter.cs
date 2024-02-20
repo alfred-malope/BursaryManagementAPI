@@ -4,6 +4,9 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace BursaryManagementAPI
 {
+    /// <summary>
+    /// The secure endpoint auth requirement filter.
+    /// </summary>
     internal class SecureEndpointAuthRequirementFilter : IOperationFilter
     {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)

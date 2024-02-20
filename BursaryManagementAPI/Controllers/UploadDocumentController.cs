@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace BursaryManagementAPI.Controllers
 {
+    /// <summary>
+    /// The upload document controller.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class UploadDocumentController : ControllerBase
