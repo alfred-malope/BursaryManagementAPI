@@ -1,4 +1,4 @@
-@BursaryManagementAPI_HostAddress = http://localhost:5263
+@BursaryManagementAPI_HostAddress = https://bursarymanagementapi.azurewebsites.net
 
 GET {{BursaryManagementAPI_HostAddress}}/weatherforecast/
 Accept: application/json
