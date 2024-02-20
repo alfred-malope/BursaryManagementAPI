@@ -5,12 +5,13 @@
         int ID { get; set; }
         int UniversityID { get; set; }
         DateTime DateCreated { get; set; }
-        double Amount { get; set; }
+
+        decimal Amount { get; set; }
         string StatusID { get; set; }
         string Comment { get; set; }
 
 
-        public UniversityFundRequest(int universityID, DateTime dateCreated, double amount, string statusID, string comment)
+        public UniversityFundRequest(int universityID, DateTime dateCreated, decimal amount, string statusID, string comment)
         {
             UniversityID = universityID;
             DateCreated = dateCreated;
@@ -19,9 +20,13 @@
             Comment = comment;
         }
 
-        public void save()
-        {
-            //new DBManager().SaveUniversityFundRequest(this);
-        }
+
+       public int getUniversityID()=> UniversityID;
+       
+        public DateTime getDateCreated()=> DateCreated;
+        public decimal getAmount()=> Amount;
+        public string getStatusID()=> StatusID;
+        public string getComment()=> Comment;
+
     }
 }

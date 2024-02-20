@@ -23,7 +23,7 @@ namespace BursaryManagementAPI.Controllers
         {
             if(ModelState.IsValid)
             {
-                var result = await _userManager.RegisterUserAsync(model);
+                var result = _userManager.ProcessRegistration(model);
                 if (result.isSuccess)
                 {
                     return Ok(result);

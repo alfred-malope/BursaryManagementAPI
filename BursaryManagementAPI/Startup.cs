@@ -42,12 +42,15 @@ public class Startup
         
         services.AddScoped<UniversityDAL>();
         services.AddScoped<UserDAL>();
-        services.AddScoped<ContactsDAL>();
         services.AddScoped<UploadDocumentDAL>();
         services.AddScoped<StudentFundRequestDAL>();
         services.AddScoped<StudentFundRequestBLL>();
         services.AddScoped<UploadDocumentBLL>();
-       
+        services.AddScoped<UniversityDAL>();
+        services.AddScoped<UniversityFundRequestBLL>();
+        services.AddScoped<AdminBLL>();
+        services.AddScoped<AdminDAL>();
+
 
 
         //adding Azure services to the dependency injection container (scoped to instantiate a new object when requested )
@@ -59,7 +62,7 @@ public class Startup
         });
 
 
-        services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+        _ = services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
         services.AddIdentity<IdentityUser, IdentityRole>(options =>
         {

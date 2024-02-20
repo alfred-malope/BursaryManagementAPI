@@ -43,5 +43,6 @@ namespace DataAccess.Entity
 
         [Required]
         public decimal Amount { get; set; }
+        public int UserID { get; set; }
     }
 }
