@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Net;
 using BusinessLogic.Models.Response;
 using Microsoft.AspNetCore.Identity;
+using System.Transactions;
 
 namespace BusinessLogic
 {
@@ -33,78 +34,82 @@ namespace BusinessLogic
         public void Create(Models.CreateStudentFundRequestForNewStudent newRequest)
         {
             if (newRequest != null)
-                try
+                using (TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    Models.Register userRequest = new()
+                    try
                     {
-
-                        FirstName = newRequest.FirstName,
-                        LastName = newRequest.LastName,
-                        Email = newRequest.Email,
-                        PhoneNumber = newRequest.PhoneNumber,
-                        Role = "Student",
-                        Password = "P@ssword1",
-                        ConfirmPassword = "P@ssword1"
-
-                    };
-                    IdentityUser StudentUser = new IdentityUser
-                    {
-                        Email = newRequest.Email,
-                        UserName = newRequest.Email,
-                        PhoneNumber = newRequest.PhoneNumber,
-                    };
-
-                    var result = _userDAL.RegisterIdentityUser(StudentUser, userRequest.Password, userRequest.Role).Result;
-                    if (result.Succeeded)//Check if user Identity has been added successfully
-                    {
-                        //Create Contacts object and insert to table,
-                        ContactDetails contactDetails = new ContactDetails
+                        Models.Register userRequest = new()
                         {
-                            Email = newRequest.Email,
-                            PhoneNumber = newRequest.PhoneNumber,
-                        };
-                        int contactId = _userDAL.InsertContactsAndGetPrimaryKey(contactDetails);
 
-                        //create User object and insert User
-                        User user = new User
-                        {
-                            FirstName = newRequest.FirstName,
-                            LastName = newRequest.LastName,
-                            ContactID = contactId,
-                        };
-                        int userId = _userDAL.InsertUserAndGetPrimaryKey(user);
-
-                        //insert UserRole Reference
-                        _userDAL.InsertToUserRole(userId, userRequest.Role);
-
-
-
-
-                        // Convert the business logic model to the data access model
-                        CreateStudentFundRequestForNewStudent dataAccessModel = new()
-                        {
-                            IDNumber = newRequest.IDNumber,
                             FirstName = newRequest.FirstName,
                             LastName = newRequest.LastName,
                             Email = newRequest.Email,
                             PhoneNumber = newRequest.PhoneNumber,
-                            GenderName = newRequest.GenderName,
-                            RaceName = newRequest.RaceName,
-                            UniversityID = newRequest.UniversityID,
-                            BirthDate = newRequest.BirthDate,
-                            Grade = newRequest.Grade,
-                            Amount = newRequest.Amount,
-                            UserID = userId
+                            Role = "Student",
+                            Password = "P@ssword1",
+                            ConfirmPassword = "P@ssword1"
 
                         };
+                        IdentityUser StudentUser = new IdentityUser
+                        {
+                            Email = newRequest.Email,
+                            UserName = newRequest.Email,
+                            PhoneNumber = newRequest.PhoneNumber,
+                        };
 
-                        _repository.Create(dataAccessModel);
+                        var result = _userDAL.RegisterIdentityUser(StudentUser, userRequest.Password, userRequest.Role).Result;
+                        if (result.Succeeded)//Check if user Identity has been added successfully
+                        {
+                            //Create Contacts object and insert to table,
+                            ContactDetails contactDetails = new ContactDetails
+                            {
+                                Email = newRequest.Email,
+                                PhoneNumber = newRequest.PhoneNumber,
+                            };
+                            int contactId = _userDAL.InsertContactsAndGetPrimaryKey(contactDetails);
 
+                            //create User object and insert User
+                            User user = new User
+                            {
+                                FirstName = newRequest.FirstName,
+                                LastName = newRequest.LastName,
+                                ContactID = contactId,
+                            };
+                            int userId = _userDAL.InsertUserAndGetPrimaryKey(user);
+
+                            //insert UserRole Reference
+                            _userDAL.InsertToUserRole(userId, userRequest.Role);
+
+
+
+
+                            // Convert the business logic model to the data access model
+                            CreateStudentFundRequestForNewStudent dataAccessModel = new()
+                            {
+                                IDNumber = newRequest.IDNumber,
+                                FirstName = newRequest.FirstName,
+                                LastName = newRequest.LastName,
+                                Email = newRequest.Email,
+                                PhoneNumber = newRequest.PhoneNumber,
+                                GenderName = newRequest.GenderName,
+                                RaceName = newRequest.RaceName,
+                                UniversityID = newRequest.UniversityID,
+                                BirthDate = newRequest.BirthDate,
+                                Grade = newRequest.Grade,
+                                Amount = newRequest.Amount,
+                                UserID = userId
+
+                            };
+
+                            _repository.Create(dataAccessModel);
+                            scope.Complete();
+
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Error creating student fund request" + ex.StackTrace);
+                    catch (TransactionAbortedException ex)
+                    {
+                        throw new Exception("Error creating student fund request" + ex.StackTrace);
+                    }
                 }
             else
                 throw new ArgumentNullException(nameof(newRequest));
